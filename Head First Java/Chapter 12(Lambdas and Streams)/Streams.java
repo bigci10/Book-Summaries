@@ -385,11 +385,11 @@ class Example6
  	Bu daha uzun akış işlem hatlarıyla, sanırım bilgisayarın bitmesini ve her işlemi ayrı ayrı gerçekleştirmesini ve ardından 
  		bir sonrakini gerçekleştirmek için geri dönmesini istemezsiniz, değil mi?
  		
- 	Yani bir terminal operasyonuna ihtiyaç duymamızın nedeni, kütüphanenin YALNIZCA boru hattındaki TÜM işlemleri bildiğinde \"yapması\" mıydı?
+ 	Yani bir terminal operasyonuna ihtiyaç duymamızın nedeni, kütüphanenin YALNIZCA bekleme hattındaki TÜM işlemleri bildiğinde \"yapması\" mıydı?
  			Yes, because Streams are lazy
  	
  	Bu onların yavaş veya işe yaramaz oldukları anlamına gelmez! Bu, her ara işlemin sadece ne yapılacağına dair talimat olduğu anlamına gelir; talimatın kendisini yerine getirmez. Ara operasyonlar tembel bir şekilde değerlendirilir.
- 	Terminal işlemi, tüm talimat listesine, boru hattındaki tüm ara işlemlere bakmaktan ve ardından tüm seti tek seferde birlikte çalıştırmaktan sorumludur.
+ 	Terminal işlemi, tüm talimat listesine, bekleme hattındaki tüm ara işlemlere bakmaktan ve ardından tüm seti tek seferde birlikte çalıştırmaktan sorumludur.
  		Terminal operasyonları isteklidir; çağrıldıkları anda çalıştırılırlar.
  	
  	Her bir ara işlem için orijinal koleksiyonu yinelemek zorunda kalmak yerine, verileri yalnızca bir kez gözden geçirirken tüm işlemleri yapmak mümkün olabilir.
