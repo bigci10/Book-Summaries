@@ -218,7 +218,7 @@ class Test
  		
  		Pipelining : 
  		Birçok akış işlemi, bir akışı kendileri döndürerek işlemlerin daha büyük bir işlem hattı oluşturmak üzere zincirlenmesine olanak tanır.
- 		Bu, tembellik ve kısa devre gibi bir sonraki bölümde açıklayacağımız belirli optimizasyonları mümkün kılar.
+ 		Bu, lazy ve kısa devre gibi bir sonraki bölümde açıklayacağımız belirli optimizasyonları mümkün kılar.
  		İşlemlerin işlem hattı, veri kaynağında veritabanı benzeri bir sorgu olarak görüntülenebilir.
  		
  		Internal iteration:
@@ -261,8 +261,8 @@ class Test1
  		
  		Collect dışındaki tüm bu işlemler başka bir akış döndürür, böylece kaynakta sorgu olarak görüntülenebilen bir işlem hattı oluşturmak üzere bağlanabilirler.
  		Son olarak, collect işlemi bir sonuç döndürmek için işlem hattını işlemeye başlar (burada bir akıştan başka bir şey, bir Liste döndürdüğü için farklıdır). 
- 		Hiçbir sonuç üretilmez ve aslında toplama çağrılana kadar menüden hiçbir öğe seçilmez.
- 		Bunu, zincirdeki yöntem çağrıları, toplama çağrılana kadar sıraya alınmış gibi düşünebilirsiniz.
+ 		Hiçbir sonuç üretilmez ve aslında collect çağrılana kadar menüden hiçbir öğe seçilmez.
+ 		Bunu, zincirdeki yöntem çağrıları, collect çağrılana kadar sıraya alınmış gibi düşünebilirsiniz.
  		
  		
  		Açıkladığımız kodun, menü öğelerinin listesini adım adım işleyecek olursanız yazacağınızdan ne kadar farklı olduğuna dikkat edin.
@@ -305,7 +305,7 @@ class Test1
  	Bu, üretici-tüketici ilişkisinin bir biçimidir.
  	
  	
- 	Başka bir görüş ise, bir akışın tembel bir şekilde oluşturulmuş bir koleksiyon gibi olduğudur: değerler, bir tüketici tarafından talep edildiğinde hesaplanır (yönetimde bu, talep odaklı, hatta tam zamanında üretimdir).
+ 	Başka bir görüş ise, bir akışın lazy bir şekilde oluşturulmuş bir koleksiyon gibi olduğudur: değerler, bir tüketici tarafından talep edildiğinde hesaplanır (yönetimde bu, talep odaklı, hatta tam zamanında üretimdir).
  	
  	
  	
@@ -365,7 +365,7 @@ class Test1
   	Örneğin:(Collections: external iteration with a for-each loop)
   	List<String> names = new ArrayList<>();
   	for(Dish dish: menu) {  //Menü listesini sırayla açıkça yineler
-  		names.add(dish.getName()); //Adı ayıklar ve bir akümülatöre ekler.
+  		names.add(dish.getName()); //Adı ayıklar ve bir listeye ekler.
 	}
 	
 	
@@ -412,7 +412,7 @@ class Test1
 	 Java 8'in Collection gibi bir arayüze ihtiyacı vardı, ancak yineleyiciler(iterators) olmadan, ergo Stream! Şekil 4.4, bir akış (iç yineleme) ile bir koleksiyon (dış yineleme) arasındaki farkı göstermektedir.
 	 
 	 Koleksiyonlar ve akışlar arasındaki kavramsal farklılıkları açıkladık. 
-	 Özellikle, akışlar, kitaplığın sizin için yineleme yapmakla ilgilendiği iç yinelemeyi kullanır.
+	 Özellikle, akışlar, sizin için yineleme yapmakla ilgilendiği iç yinelemeyi kullanır.
 	 
 	 Ancak bu, yalnızca yinelemeyi gizleyen önceden tanımlanmış işlemlerin (örneğin, filtre veya eşleme) bir listesine sahipseniz kullanışlıdır.
 	
@@ -452,7 +452,7 @@ class Test1
  			 
  	Filtre veya sıralama gibi ara işlemler, dönüş türü olarak başka bir akış döndürür.
  	Bu, işlemlerin bir sorgu oluşturmak üzere bağlanmasını sağlar.
- 	Önemli olan, ara işlemlerin, tembel oldukları akış işlem hattında bir terminal işlemi çağrılana kadar herhangi bir işlem gerçekleştirmemesidir. 
+ 	Önemli olan, ara işlemlerin, lazy oldukları akış işlem hattında bir terminal işlemi çağrılana kadar herhangi bir işlem gerçekleştirmemesidir. 
 	Bunun nedeni, ara işlemlerin genellikle terminal işlemi tarafından tek bir geçişte birleştirilebilmesi ve işlenebilmesidir.
 	
 	Akış işlem hattında neler olup bittiğini anlamak için kodu değiştirin, böylece her lambda işlediği geçerli çanağı da yazdırır.
