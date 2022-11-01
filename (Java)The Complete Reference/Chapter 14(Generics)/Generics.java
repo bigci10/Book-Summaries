@@ -1169,7 +1169,827 @@ class GenMethDemo
   
   --------------------------------------------------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------------------------------------------------
+ 					Raw Types and Legacy Code
 
+ JDK 5'ten önce jenerik desteği bulunmadığından, eski, jenerik öncesi koddan bazı geçiş yolları sağlamak gerekiyordu.
+ Ayrıca, bu geçiş yolunun, jenerik öncesi kodun işlevsel kalmasını ve aynı zamanda jeneriklerle uyumlu olmasını sağlaması gerekiyordu.
+ Başka bir deyişle, jenerik öncesi kodun jeneriklerle çalışabilmesi ve jenerik kodun jenerik öncesi kodla çalışabilmesi gerekiyordu.
+ 
+ Generic türlere geçişi işlemek için Java, generic bir sınıfın herhangi bir tür bağımsız değişkeni olmadan kullanılmasına izin verir.
+ Bu, sınıf için ham bir tür oluşturur.
+ Bu ham tür, jenerik bilgisi olmayan eski kodla uyumludur.
+ 
+ Ham tipin kullanılmasının ana dezavantajı, jeneriklerin tip güvenliğinin kaybolmasıdır.
+ 
+ işte bi örnek:
+ 	
+-----------------------------------------------------------------------------------------------------------------------------*/
+
+//class Gen<T>
+//{
+//	T ob;
+//	
+//	Gen(T o)
+//	{
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//
+//class RawDemo
+//{
+//	public static void main(String[] args) 
+//	{
+//		// Create a Gen object for Integers.
+//		Gen<Integer> iOb = new Gen<Integer>(88);
+//		// Create a Gen object for Strings.
+//		Gen<String> strOb = new Gen<String>("Generics Test");
+//		
+//		// Create a raw-type Gen object and give it
+//		Gen raw = new Gen(Double.valueOf(98.6));
+//		
+//		// Cast here is necessary because type is unknown.
+//		double d = (Double) raw.getOb();
+//		System.out.println("value: " + d);
+//		
+//		// The use of a raw type can lead to run-time
+//		// exceptions. Here are some examples.
+//		// The following cast causes a run-time error!
+//		int i = (Integer) raw.getOb();
+//		
+//		// This assignment overrides type safety.
+//		strOb = raw;
+//		// String str = strOb.getOb(); // run-time error
+//		
+//		// This assignment also overrides type safety.
+//		raw = iOb; // OK, but potentially wrong
+//		d = (Double) raw.getOb(); // run-time error
+//	}
+//}
+
+
+
+/*
+ 			Code explain
+ 	Bu program birkaç ilginç şey içeriyor. 
+ 	İlk olarak, genel Gen sınıfının ham türü aşağıdaki bildirimle oluşturulur:
+ 		
+ 		Gen raw = new Gen(Double.valueOf(98.6));
+ 	
+ 	Hiçbir tür bağımsız değişkeninin belirtilmediğine dikkat edin. 
+ 	Özünde bu, T türü Object ile değiştirilen bir Gen nesnesi oluşturur.
+ 	
+ 	Ham tip, tür güvenli değildir. 
+ 	Böylece, ham türdeki bir değişkene herhangi bir Gen nesnesi türüne bir başvuru atanabilir.
+ 	
+ 	Tersi de izin verilir; belirli bir Gen türündeki bir değişkene ham Gen nesnesine başvuru atanabilir.
+ 	Bununla birlikte, her iki işlem de potansiyel olarak güvensizdir, çünkü jeneriklerin tür kontrol mekanizması atlatılır.
+ 	
+ 	
+ 	Bu tip güvenliği eksikliği, programın sonundaki yorumlanmış satırlarla gösterilmektedir. 
+ 	Her vakayı inceleyelim. İlk olarak, aşağıdaki durumu göz önünde bulundurun:
+ 	
+ 	// int i = (Integer) raw.getOb(); // run-time error
+ 	
+ 	Bu bildirimde, ham içindeki ob değeri elde edilir ve bu değer Integera cast edilir.
+ 	Sorun şu ki, ham bir tamsayı değeri değil, bir double değer içerir.
+ 	Ancak, ham türü bilinmediğinden derleme zamanında bu algılanamaz.
+ 	
+ 	Bu nedenle, bu deyim çalışma zamanında başarısız olur.
+ 	
+ 	
+ 	Sonraki dizi bir strOb'a (Gen tipi bir başvuru<String>) ham bir Gen nesnesine bir başvuru atar:
+ 	
+ 	strOb = raw; // OK, but potentially wrong
+		// String str = strOb.getOb(); // run-time error
+	
+	Atama işleminin kendisi, sözdizimsel olarak doğrudur, ancak sorgulanabilir.
+	strOb Gen türünde <String>olduğundan, bir String içerdiği varsayılır.
+	Ancak, atamadan sonra, strOb tarafından başvurulan nesne bir double içerir.
+ 	Bu nedenle, çalışma zamanında, strOb içeriğini str'ye atamaya çalışıldığında, strOb artık bir double içerdiğinden bir çalışma zamanı hatası ortaya çıkar.
+
+	Böylece, genel bir referansa ham referans atanması, tür güvenlik mekanizmasını atlar.
+	
+*/
+
+
+
+/*--------------------------------------------------------------------------------------
+ 		Generic Class Hierarchies
+ 	
+ 	Genel sınıflar, genel olmayan bir sınıfla aynı şekilde bir sınıf hiyerarşisinin parçası olabilir.
+ 	Böylece, genel bir sınıf bir üst sınıf olarak hareket edebilir veya bir alt sınıf olabilir. 
+ 	Genel ve genel olmayan hiyerarşiler arasındaki temel fark, genel bir hiyerarşide, 
+ 	genel bir üst sınıf tarafından ihtiyaç duyulan tüm tür bağımsız değişkenlerinin tüm alt sınıflar tarafından hiyerarşiye geçirilmesi gerektiğidir.	
+ 	Bu, yapıcı argümanlarının bir hiyerarşiden geçirilmesi gereken yola benzer.
+ 	
+ 	
+ 	
+ 	Using a Generic Superclass:
+-----------------------------------------------------------------------------------------*/
+
+//class Gen<T>
+//{
+//	T ob;
+//	
+//	Gen(T o)
+//	{
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//class Gen2<T> extends Gen<T>
+//{
+//	Gen2(T o)
+//	{
+//		super(o);
+//	}
+//}
+
+/*
+Bu hiyerarşide, Gen2 genel sınıfı genişletir Gen. 
+Gen2'nin aşağıdaki satırla nasıl bildirildiğine dikkat edin:
+	
+	class Gen2<T> extends Gen<T> {
+
+Type parametresi T, Gen2 tarafından belirtilir ve ayrıca extends yan tümcesinde Gen'e geçirilir. 
+Bu, Gen2'ye hangi tür geçerse geçilsin, Gen'e de geçirileceği anlamına gelir.
+
+	Gen2<Integer> num = new Gen2<Integer>(100);
+
+Böylece, Gen2'nin Gen bölümünün içindeki ob, Tamsayı türünde olacaktır.
+
+Gen2'nin, Gen üst sınıfını desteklemesi dışında T type parametresini kullanmadığına da dikkat edin.
+
+Bu nedenle, genel bir üst sınıfın alt sınıfının başka türlü genel olması gerekmese bile, 
+yine de genel üst sınıfının gerektirdiği type parametrelerini belirtmesi gerekir.
+
+Tabii ki, bir alt sınıf gerekirse kendi tür parametrelerini eklemekte özgürdür.
+
+Örneğin, Gen2'nin kendi type parametresini eklediği önceki hiyerarşinin bir varyasyonu aşağıda verilmiştir:
+*/
+
+//class Gen<T>
+//{
+//	T ob;
+//	
+//	Gen(T o)
+//	{
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//class Gen2<T,V> extends Gen<T>
+//{
+//	V ob2;
+//	
+//	Gen2(T o, V o2)
+//	{
+//		super(o);
+//		ob2 = o2;
+//	}
+//	
+//	V getOb2()
+//	{
+//		return ob2;
+//	}
+//}
+//
+//class HierDemo
+//{
+//	public static void main(String[] args)
+//	{
+//		Gen2<String , Integer> x = new Gen2<String, Integer>("Value is: ",99);
+//		
+//		System.out.print(x.getOb());
+//		System.out.println(x.getOb2());
+//		
+//	}
+//}
+
+/*---------------------------------------------------------------------
+ Gen2'nin bu sürümünün burada gösterilen bildirimine dikkat edin:
+ Burada, T Gen'e iletilen tiptir ve V, Gen2'ye özgü tiptir.
+ 
+ class Gen2<T, V> extends Gen<T> {
+ 
+V, ob2 adlı bir nesneyi bildirmek için ve getOb2( ) yöntemi için bir dönüş türü olarak kullanılır.
+main( ), type parametresi T'nin String ve type parametresi V'nin Integer olduğu bir Gen2 nesnesi oluşturulur.
+
+-----------------------------------------------------------------------*/ 
+
+
+
+/*----------------------------------------------------------------------------------
+ 		A Generic Subclass
+ 		
+ 	Genel olmayan bir sınıfın, genel bir alt sınıfın üst sınıfı olması tamamen kabul edilebilir.
+ 	Örneğin : 
+------------------------------------------------------------------------------------*/ 
+
+//class NonGen
+//{
+//	int num;
+//	
+//	NonGen(int i)
+//	{
+//		num = i;
+//	}
+//	
+//	int getNum()
+//	{
+//		return num;
+//	}
+//}
+//
+//class Gen<T> extends NonGen 
+//{
+//	T ob;
+//	
+//	
+//	Gen(T o, int i)
+//	{
+//		super(i);
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//class HierDemo2
+//{
+//	public static void main(String[] args) 
+//	{
+//		Gen<String> w = new Gen<String>("Hello",47);
+//		
+//		System.out.println(w.getOb());
+//		System.out.println(w.getNum());
+//		
+//	}
+//}
+
+/*-----------------------------------------------------------------------------------------
+ 	Programda, Gen'in aşağıdaki bildirimde NonGen'i nasıl devraldığına dikkat edin:
+ 	class Gen<T> extends NonGen {
+ 	
+ 	
+ 	NonGen genel olmadığından, tür bağımsız değişkeni belirtilmez.
+ 	Bu nedenle, Gen, T tip parametresini beyan etse de, NonGen tarafından gerekli değildir (veya kullanılamaz).
+ 	Böylece, NonGen, Gen tarafından normal şekilde miras alınır. Özel koşullar geçerli değildir.
+ -----------------------------------------------------------------------------------------*/
+
+
+
+
+/*---------------------------------------------------------------------------------------
+	Run-Time Type Comparisons Within a Generic Hierarchy
+	
+	Bölüm 13'te tanıtılan çalışma zamanı türü instanceof örneğini hatırlayın.
+	Açıklandığı gibi, instanceof bir nesnenin bir sınıfın örneği olup olmadığını belirler.
+	Bir nesne belirtilen türdeyse veya belirtilen türe cast edilebiliyorsa true değerini döndürür.
+	instanceof, genel sınıfların nesnelerine uygulanabilir.
+	
+	Aşağıdaki sınıf, genel bir hiyerarşinin tür uyumluluğu etkilerinden bazılarını gösterir:	
+-----------------------------------------------------------------------------------------*/
+
+//class Gen<T>
+//{
+//	T ob;
+//	
+//	Gen(T o)
+//	{
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//class Gen2<T> extends Gen<T>
+//{
+//	Gen2(T o)
+//	{
+//		super(o);
+//	}
+//}
+//
+//class HierDemo3
+//{
+//	public static void main(String[] args) 
+//	{
+//		Gen<Integer> iOb = new Gen<Integer>(88);
+//		
+//		
+//		Gen2<Integer> iOb2 = new Gen2<Integer>(99);
+//		
+//		Gen2<String> strOb2 = new Gen2<String>("Generics Test");
+//		
+//		if(iOb2 instanceof Gen2<?>)
+//			 System.out.println("iOb2 is instance of Gen2");
+//		
+//		if(iOb2 instanceof Gen<?>)
+//			 System.out.println("iOb2 is instance of Gen");
+//		
+//		System.out.println();
+//		
+//		if(strOb2 instanceof Gen2<?>)
+//			 System.out.println("strOb2 is instance of Gen2");
+//		
+//		if(strOb2 instanceof Gen<?>)
+//			 System.out.println("strOb2 is instance of Gen");
+//		
+//		System.out.println();
+//		
+//		if(iOb instanceof Gen2<?>)
+//			 System.out.println("iOb is instance of Gen2");
+//		
+//		if(iOb instanceof Gen<?>)
+//			 System.out.println("iOb is instance of Gen");
+//		
+//		
+//	}
+//}
+
+/*-------------------------------------------------------------------------------------------
+ 	Bu programda, Gen2, T türü parametresinde genel olan Gen'in bir alt sınıfıdır.
+ 	main( ) içinde üç nesne oluşturulur. 
+ 	Birincisi, Gen türünde bir nesne olan iOb'dur<Integer>. 
+ 	İkincisi, Gen2'nin bir örneği olan iOb2'dir<Integer>. 
+ 	Son olarak, strOb2 Gen2 türünde bir nesnedir<String>.
+ 	
+ 	Ardından, program iOb2 türünde bu test örneklerini gerçekleştirir:
+ 	
+ 	// See if iOb2 is some form of Gen2.
+	if(iOb2 instanceof Gen2<?>)
+ 		System.out.println("iOb2 is instance of Gen2");
+
+	// See if iOb2 is some form of Gen.
+	if(iOb2 instanceof Gen<?>)
+ 		System.out.println("iOb2 is instance of Gen");
+ 	
+ 	
+ 	Çıktının gösterdiği gibi, her ikisi de başarılı. İlk testte, iOb2 Gen2<?> ile karşılaştırılır.
+ 	Bu test başarılı olur, çünkü iOb2'nin bir tür Gen2 nesnesinin bir nesnesi olduğunu doğrular.
+ 	
+ 	Joker karakterin kullanılması, iOb2'nin herhangi bir Gen2 türünde bir nesne olup olmadığını belirlemek için örnek sağlar. 
+ 	Daha sonra, iOb2, süper sınıf türü olan Gen<?>'a karşı test edilir.
+ 	
+ 	Bu aynı zamanda doğrudur çünkü iOb2 bir tür Gen, the superclassr.
+ 	
+ 	main( ) içindeki sonraki birkaç satır, strOb2 için aynı sırayı (ve aynı sonuçları) gösterir.
+-----------------------------------------------------------------------------------------------------*/
+
+
+
+
+/*--------------------------------------------------------------------------------------------------
+ 		Casting
+ 		
+ 	Genel sınıfın bir örneğini diğerine ancak ikisi başka türlü uyumluysa ve tür bağımsız değişkenleri aynıysa yayınlayabilirsiniz. 
+ 	Örneğin, yukarıdaki programı varsayarsak, bu oyuncu kadrosu yasaldır:	
+ 	
+ 	(Gen<Integer>) iOb2 //Legal;
+ 	(Gen<Long>) iOb2 //illegal;
+
+----------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*-----------------------------------------------------------------------------
+ 		Overriding Methods in a Generic Class
+ 		
+ 	Genel bir sınıftaki bir yöntem, diğer yöntemler gibi geçersiz kılınabilir. 
+ 	Örneğin, getOb( ) yönteminin geçersiz kılındığı bu programı düşünün:
+ 
+-------------------------------------------------------------------------------*/
+
+//class Gen<T>
+//{
+//	T ob;
+//	
+//	Gen(T o)
+//	{
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		System.out.println("Gen's getOb(): ");
+//		return ob;
+//	}
+//}
+//
+//class Gen2<T> extends Gen<T>
+//{
+//	Gen2(T o)
+//	{
+//		super(o);
+//	}
+//	
+//	@Override
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//class OverrideDemo
+//{
+//	public static void main(String[] args) 
+//	{
+//		
+//		//Create a Gen object for Integers.
+//		Gen<Integer> iOb = new Gen<Integer>(88);
+//		
+//		Gen2<Integer> iOb2 = new Gen2<Integer>(99);
+//		
+//		Gen2<String> strOb2 = new Gen2<String> ("Generics Test");
+//		
+//		System.out.println(iOb.getOb());
+//		System.out.println(iOb2.getOb());
+//		System.out.println(strOb2.getOb());
+//	}
+//}
+
+
+
+
+
+/*------------------------------------------------------------------------------------
+ 		Type Inference with Generics
+ 	
+ 	JDK 7 ile başlayarak, genel bir tür örneği oluşturmak için kullanılan sözdizimini kısaltmak mümkün hale geldi. 
+ 	Başlamak için aşağıdaki genel sınıfı göz önünde bulundurun:
+-------------------------------------------------------------------------------------*/
+
+//class MyClass<T,V>
+//{
+//	T ob1 ;
+//	V ob2 ; 
+//	
+//	MyClass(T o1, V o2)
+//	{
+//		ob1 = o1;
+//		ob2 = o2;
+//	}
+//}
+
+/*-----------------------------------------------------------------------------------------------------------
+ JDK 7'den önce, MyClass'ın bir örneğini oluşturmak için aşağıdakine benzer bir deyim kullanmanız gerekirdi:
+ MyClass<Integer, String> mcOb = new MyClass<Integer, String>(98, "A String");
+ 
+ Burada, type bağımsız değişkenleri (Integer ve String) iki kez belirtilir: birincisi, mcOb bildirildiğinde ve ikincisi, 
+ new aracılığıyla bir MyClass örneği oluşturulduğunda.
+ 
+ Jenerikler JDK 5 tarafından tanıtıldığından, JDK 7'den önceki tüm Java sürümlerinin gerektirdiği form budur.
+ Yanlış bir şey olmamasına rağmen, kendi başına, bu formla, olması gerekenden biraz daha ayrıntılı.
+ Yeni yan tümcede, tür bağımsız değişkenlerinin türü mcOb türünden kolayca çıkarılabilir; 
+ bu nedenle, ikinci kez belirtilmeleri için hiçbir neden yoktur.
+ 
+ Bu durumu ele almak için JDK 7, ikinci spesifikasyondan kaçınmanızı sağlayan sözdizimsel bir öğe ekledi.
+ Bugün önceki deklarasyon burada gösterildiği gibi yeniden yazılabilir:
+ 
+ MyClass<Integer, String> mcOb = new MyClass<>(98, "A String");
+ 
+ Örnek oluşturma bölümünün yalnızca boş bir tür bağımsız değişken listesi olan <> kullandığına dikkat edin.
+ 
+ Buna elmas operatörü denir. 
+ Derleyiciye, yeni ifadede oluşturucu tarafından ihtiyaç duyulan tür bağımsız değişkenlerini çıkarsamasını söyler.
+ Bu tür çıkarım sözdiziminin temel avantajı, bazen oldukça uzun beyan ifadeleri olan şeyleri kısaltmasıdır.
+ 
+ Tür çıkarımı kullanıldığında, genel başvuru ve örnek oluşturma için bildirim sözdizimi şu genel biçime sahiptir:
+ class-name<type-arg-list> var-name = new class-name<>(cons-arg-list);
+ Burada, yeni yan tümcedeki oluşturucunun type bağımsız değişken listesi boştur.
+ 
+-------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*----------------------------------------------------------------------------------------------
+  		Type Erasure
+  	
+  	Genellikle, Java derleyicisinin kaynak kodunuzu .class koduna nasıl dönüştürdüğü hakkındaki ayrıntıları bilmek gerekli değildir.
+  	Bununla birlikte, jenerikler söz konusu olduğunda, sürecin genel bir anlayışı önemlidir, 
+  	çünkü genel özelliklerin neden olduğu gibi çalıştığını ve davranışlarının neden bazen biraz şaşırtıcı olduğunu açıklar.
+  	
+  	Jeneriklerin Java'ya eklenme şeklini yöneten önemli bir kısıtlama, 
+  	Java'nın önceki sürümleriyle uyumluluk ihtiyacıydı.
+  	Basitçe söylemek gerekirse, genel kodun önceden var olan, genel olmayan kodla uyumlu olması gerekiyordu.
+  	Bu nedenle, Java dilinin sözdiziminde veya JVM'de yapılan herhangi bir değişiklik, eski kodu bozmaktan kaçınmak zorundaydı.
+  	
+  	Java'nın bu kısıtlamayı yerine getirirken jenerikleri uygulama şekli, silme(Erasure) işleminin kullanılmasıdır.
+  	
+  	Genel olarak, silme işleminin işleyiş şekli aşağıda açıklanmıştır.
+  	Java kodunuz derlendiğinde, tüm genel tür bilgileri kaldırılır (silinir).
+  	
+	Bu, tür parametrelerini açık bir bağlı belirtilmemişse 
+	Object olan bağlı türleriyle değiştirmek ve ardından tür bağımsız değişkenleri tarafından belirtilen türlerle
+    tür uyumluluğunu korumak için uygun cast işlemlerini (tür bağımsız değişkenleri tarafından belirlendiği şekilde) uygulamak anlamına gelir.
+    Derleyici ayrıca bu tür uyumluluğu da zorlar.
+    Genel türlere yönelik bu yaklaşım, çalışma zamanında hiçbir tür parametresinin bulunmadığı anlamına gelir.
+    Bunlar sadece bir kaynak kodu mekanizmasıdır.
+    
+------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*-----------------------------------------------------------------------
+		Bridge Methods
+	
+	Bazen, derleyicinin, bir alt sınıftaki geçersiz kılan bir yöntemin 
+	tür silinmesinin üst sınıftaki yöntemle aynı silmeyi üretmediği durumları işlemek için bir sınıfa bir köprü yöntemi eklemesi gerekir.
+	Bu durumda, üst sınıfın tür silme işlemini kullanan bir yöntem oluşturulur ve bu yöntem, alt sınıf tarafından belirtilen tür silme işlemine sahip yöntemi çağırır.
+	Tabii ki, köprü yöntemleri yalnızca bayt kodu düzeyinde gerçekleşir, sizin tarafınızdan görülmez ve kullanımınız için mevcut değildir.
+	
+	Köprü yöntemleri normalde ilgilenmeniz gereken bir şey olmasa da, birinin üretildiği bir durumu görmek hala öğreticidir.
+	
+-------------------------------------------------------------------------*/
+
+//class Gen<T>
+//{
+//	T ob;
+//	
+//	Gen(T o)
+//	{
+//		ob = o;
+//	}
+//	
+//	T getOb()
+//	{
+//		return ob;
+//	}
+//}
+//
+//class Gen2 extends Gen<String>
+//{
+//	
+//	Gen2(String o)
+//	{
+//		super(o);
+//	}
+//	
+//	String getOb()
+//	{
+//		System.out.print("You called String getOb(): ");
+//		return ob;
+//	}
+//}
+//
+//class BridgeDemo
+//{
+//	public static void main(String[] args) 
+//	{
+//		Gen2 strOb2 = new Gen2("Generics Test");
+//		
+//		System.out.println(strOb2.getOb());
+//		
+//	}
+//}
+
+/*-------------------------------------------------------------------------------------------------------------
+	Programda, Gen2 alt sınıfı Gen'i genişletir, ancak bildiriminde gösterildiği gibi Gen'in String'e özgü bir sürümünü kullanarak bunu yapar:
+	class Gen2 extends Gen<String> {
+	
+	Ayrıca, Gen2 içinde, getOb( ) dönüş türü olarak belirtilen String ile geçersiz kılınır:
+	
+	String getOb() {
+ 		System.out.print("You called String getOb(): ");
+ 		return ob;
+	}
+	
+	Bütün bunlar tamamen kabul edilebilir. 
+	Tek sorun, tür silme nedeniyle, beklenen getOb ( ) biçiminin
+	Object getOb() { 
+	
+	Bu sorunu çözmek için, derleyici String sürümünü çağıran önceki imzayla bir köprü yöntemi oluşturur.
+	Bu nedenle, Gen2 için sınıf dosyasını javap kullanarak incelerseniz, aşağıdaki yöntemleri görürsünüz:
+	
+	class Gen2 extends Gen<java.lang.String> {
+ 		Gen2(java.lang.String);
+ 		java.lang.String getOb();
+ 		java.lang.Object getOb(); // bridge method
+	}
+	
+	Gördüğünüz gibi köprü yöntemi de dahil edilmiştir.
+	
+	
+	Bu örnek hakkında yapılması gereken son bir nokta var. 
+	İki getOb( ) yöntemi arasındaki tek farkın dönüş türü olduğuna dikkat edin. 
+	Normalde, bu bir hataya neden olur, ancak bu kaynak kodunuzda oluşmadığından, bir soruna neden olmaz ve JVM tarafından doğru şekilde işlenir.
+	
+---------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+/*--------------------------------------------------------------------------------
+  			Ambiguity Errors
+  	
+  	Jeneriklerin dahil edilmesi, karşı korunmanız gereken başka bir hata türüne yol açar: belirsizlik.
+  	Belirsizlik hataları, silme işlemi, görünüşte farklı görünen iki genel bildirimin aynı silinmiş
+  	türe çözümlenmesine neden olarak çakışmaya neden olduğunda oluşur. 
+  	
+  	Aşağıda, yöntemin aşırı yüklenmesini içeren bir örnek verilmiştir:
+
+----------------------------------------------------------------------------------*/
+
+//class MyGenClass<T,V>
+//{
+//	T ob1;
+//	V ob2;
+//
+//	void set(T o)
+//	{
+//		ob1 = o;
+//	}
+//	
+//	void set(V o)
+//	{
+//		ob2 = o;
+//	}
+//}
+
+/*---------------------------------------------------------------------------------------------------------
+ MyGenClass'ın iki genel tür bildirdiğine dikkat edin: T ve V.
+ MyGenClass içinde, T ve V tipi parametrelere dayanarak set( ) aşırı yüklenmeye çalışılır.
+ Bu makul görünüyor çünkü T ve V farklı tipler gibi görünüyor.
+ Ancak, burada iki belirsizlik sorunu vardır.
+ 
+ İlk olarak, MyGenClass yazıldığı gibi, T ve V'nin aslında farklı türler olması şartı yoktur.
+ Örneğin, burada gösterildiği gibi bir MyGenClass nesnesi oluşturmak (prensip olarak) tamamen doğrudur:
+ 
+ MyGenClass<String, String> obj = new MyGenClass<String, String>()
+ 
+ Bu durumda, hem T hem de V, String ile değiştirilecektir. 
+ Bu, set( ) öğesinin her iki sürümünü de aynı kılar, bu da elbette bir hatadır.
+ 
+ İkinci ve daha temel sorun, set( ) öğesinin tür silme işleminin her iki sürümü de aşağıdakilere indirgemesidir:
+ void set(Object o) 
+ 
+ Bu nedenle, set( ) öğesinin MyGenClass'ta denendiği gibi aşırı yüklenmesi doğası gereği belirsizdir.
+ Belirsizlik hatalarını düzeltmek zor olabilir.
+ 
+ Örneğin, V'nin her zaman bir tür Sayı olacağını biliyorsanız, 
+ bildirimini burada gösterildiği gibi yeniden yazarak MyGenClass'ı düzeltmeyi deneyebilirsiniz:
+ class MyGenClass<T, V extends Number> { // almost OK!
+ 
+ Bu değişiklik MyGenClass'ın derlenmesine neden olur ve burada gösterilene benzer nesnelerin örneğini bile oluşturabilirsiniz:
+ MyGenClass<String, Number> x = new MyGenClass<String, Number>();
+ 
+ 
+ Bu işe yarar çünkü Java hangi yöntemin çağrılacağını doğru bir şekilde belirleyebilir. 
+ Ancak, bu satırı denediğinizde belirsizlik geri döner:
+ MyGenClass<Number, Number> x = new MyGenClass<Number, Number>();
+ 
+ Bu durumda, hem T hem de V Sayı olduğundan, set( ) öğesinin hangi sürümü çağrılmalıdır? set( ) çağrısı artık belirsizdir.
+ Açıkçası, önceki örnekte, set( ) öğesini aşırı yüklemeye çalışmak yerine iki ayrı yöntem adı kullanmak çok daha iyi olacaktır.
+ 
+ Çoğu zaman, belirsizliğin çözümü kodun yeniden yapılandırılmasını içerir, çünkü belirsizlik genellikle tasarımınızda kavramsal bir hatanız olduğu anlamına gelir.
+ 
+-------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+/*-----------------------------------------------------------------------------------------------------------
+  	Some Generic Restrictions
+  	
+  	Genel jenerikleri kullanırken aklınızda bulundurmanız gereken birkaç kısıtlama vardır.
+  	Bir type parametresinin nesnelerini, statik üyeleri, özel durumları ve dizileri oluşturmayı içerirler.
+  	
+	
+	"Type Parameters Can’t Be Instantiated"
+		type parametresinin bir örneğini oluşturmak mümkün değildir.
+		class Gen<T> {
+ 			T ob;
+ 			
+ 			Gen() {
+ 				ob = new T(); // Illegal!!!
+ 			}
+ 		}
+ 		
+ 		Burada, T'nin bir örneğini oluşturmaya çalışmak illegal.
+ 		Sebebin anlaşılması kolay olmalıdır: derleyici ne tür bir nesne oluşturacağını bilmiyor. 
+ 		T sadece bir yer tutucudur.
+ 	
+ 	
+ 	"Restrictions on Static Members"
+ 		Hiçbir statik üye, çevreleyen sınıf tarafından bildirilen type parametresini kullanamaz. 
+ 		Örneğin, bu sınıfın statik üyelerinin her ikisi de illegaldir:
+ 		
+ 		class Wrong<T>
+ 		{
+ 			static T ob;
+ 			
+ 			static T getOb()
+ 			{
+ 				return ob;
+ 			}
+ 		}
+ 		
+ 		Çevreleyen sınıf tarafından bildirilen type parametresini kullanan statik üyeleri bildiremeseniz de, bu bölümde daha önce yapıldığı gibi, kendi tür parametrelerini tanımlayan statik genel yöntemler bildirebilirsiniz.
+ 		(yani sınıfın type parametresini kullanamaz ama kendi generic bir metot olabilir.)
+ 	
+ 		
+ 	 "Generic Array Restrictions"
+ 	 
+ 	 	Diziler için geçerli olan iki önemli genel kısıtlama vardır. İlk olarak, öğe türü type parametresi olan bir dizinin örneğini oluşturamazsınız.
+ 	 	İkinci olarak, türe özgü genel başvurulardan oluşan bir dizi oluşturamazsınız.
+ 	 	
+ 	 	class Gen<T extends Number>
+ 	 	{
+ 	 		T ob;
+ 	 		
+ 	 		T[] vals; //ok
+ 	 		
+ 	 		Gen(T o, T[] nums)
+ 	 		{
+ 	 			ob = o;
+ 	 			
+ 	 			vals = new T[10];
+ 	 			
+ 	 			
+ 	 			vals = nums;
+ 	 			
+ 	 		}
+ 	 	}
+ 	 	
+ 	 	class GenArrays
+ 	 	{
+ 	 		public static void main(String[] args)
+ 	 		{
+ 	 			Integer[] n = {1,2,3,4,5};
+ 	 			
+ 	 			Gen<Integer> iob = new Gen<Integer>(50, n);
+ 	 			
+ 	 			// Can't create an array of type-specific generic references.
+ 				// Gen<Integer>[] gens = new Gen<Integer>[10]; // Wrong!
+ 		
+ 				//This is Ok
+ 				Gen<?>[] gens = new Gen<?>[10]; // OK
+
+			}
+		}
+		
+		Programın gösterdiği gibi, bu satırda olduğu gibi, T türündeki bir diziye başvuru bildirmek geçerlidir:
+		T[] vals; // OK
+		
+		Ancak, bu  satırın denediği gibi bir T dizisi oluşturamazsınız:
+		vals = new T[10]; // can't create an array of T
+		Bir T dizisi oluşturamamanızın nedeni, derleyicinin gerçekte ne tür bir dizi oluşturacağını bilmesinin bir yolu olmamasıdır.
+		
+		
+		Ancak, bir nesne oluşturulduğunda tür uyumlu bir diziye başvuruyu Gen( ) öğesine geçirebilir ve programın bu satırda yaptığı gibi bu başvuruyu vals'e atayabilirsiniz:
+		vals = nums; // OK to assign reference to existent array
+		Bu, Gen'e iletilen dizinin, nesne oluşturma sırasında T ile aynı tür olacak bilinen bir türe sahip olması nedeniyle çalışır.
+		
+		
+		main( ) içinde, belirli bir genel türe bir başvuru dizisi bildiremeyeceğinize dikkat edin.
+		Gen<Integer>[] gens = new Gen<Integer>[10]; // Wrong!
+		won’t compile. 
+		 
+		
+		Ancak, joker karakter kullanıyorsanız, burada gösterildiği gibi genel bir türe başvurular dizisi oluşturabilirsiniz:
+		Gen<?>[] gens = new Gen<?>[10]; // OK
+		Bu yaklaşım, bir dizi ham tür kullanmaktan daha iyidir, çünkü en azından bazı tür denetimleri yine de zorlanacaktır.
+		
+	
+	"Generic Exception Restriction"
+		Genel bir sınıf Throwable'ı genişletemez.
+		Bu, genel exception sınıfları oluşturamayacağınız anlamına gelir.
+		
+		 
+--------------------------------------------------------------------------------------------------------------------------------*/
 
 
 
