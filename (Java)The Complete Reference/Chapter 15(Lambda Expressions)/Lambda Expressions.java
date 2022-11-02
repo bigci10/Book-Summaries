@@ -526,7 +526,7 @@ Bir lambda ifadesini bağımsız değişken olarak kullanmak basit olsa da, onu 
  
  
  İşte bu gerçeği gösteren bir örnek.
- Bir çift değer dizisinin ortalamasını hesaplar.
+ Bir double değer dizisinin ortalamasını hesaplar.
  Ancak sıfır uzunlukta bir dizi geçirilirse, EmptyArrayException özel istisnasını atar.
  Örnekte gösterildiği gibi, bu özel durum DoubleNumericArrayFunc functional interface içinde bildirilen func( ) öğesinin throws yan tümcesinde listelenmiştir.
  
@@ -579,7 +579,7 @@ Bir lambda ifadesini bağımsız değişken olarak kullanmak basit olsa da, onu 
    Ancak, lambda ifadesinin parametresi n[ ] yerine basitçe n'dir.
    Bir lambda ifadesi parametresinin türünün hedef bağlamdan çıkarılacağını unutmayın.
    Bu durumda, hedef bağlam double[ ], dolayısıyla n türü double[ ] olacaktır.
-   unu n[ ] olarak belirtmek gerekli (veya yasal) değildir.
+   bunu n[ ] olarak belirtmek gerekli (veya yasal) değildir.
    Bunu açıkça double[ ] n olarak ilan etmek yasal olacaktır, ancak bunu yapmak bu durumda hiçbir şey kazandırmaz.
 ---------------------------------------------------------------------------------------------------*/
 
