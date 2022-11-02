@@ -664,7 +664,7 @@ Bir lambda ifadesini bağımsız değişken olarak kullanmak basit olsa da, onu 
  	METHOD REFERENCES TO STATIC METHODS
  Statik yöntem başvurusu oluşturmak için şu genel sözdizimini kullanın:
  	ClassName::methodName
- Sınıf adının yöntem adından çift virgülle ayrıldığına dikkat edin.
+ Sınıf adının yöntem adından çift noktayla ayrıldığına dikkat edin.
  :: JDK 8 tarafından açıkça bu amaçla Java'ya eklenen bir ayırıcıdır.
  Bu yöntem başvurusu, hedef türüyle uyumlu olduğu her yerde kullanılabilir.
  
@@ -1104,7 +1104,7 @@ Bu başvuru, oluşturucuyla uyumlu bir yöntem tanımlayan herhangi bir function
  myClassCons oluşturulduğunda Integer tür bağımsız değişkeni zaten belirtilmiş olduğundan, bir<Integer> sonraki satırda gösterildiği gibi bir MyClass nesnesi oluşturmak için kullanılabilir:
  	MyClass<Integer> mc = myClassCons.func(100);
  Önceki örnekler bir constructor referansı kullanmanın mekaniğini gösterse de, hiç kimse hiçbir şey kazanılmadığı için gösterildiği gibi bir constructor referansı kullanmaz.
- Dahası, aynı oluşturucu için iki isme denk gelen şeye sahip olmak, kafa karıştırıcı bir durum yaratır (en azından söylemek gerekirse).
+ Dahası, aynı oluşturucu için iki isme denk gelen şeye sahip olmak, kafa karıştırıcı bir durum yaratır.
  Bununla birlikte, size daha pratik bir kullanımın tadını vermek için, aşağıdaki program myClassFactory( ) adı verilen statik bir yöntem kullanır, bu da her türlü MyFunc nesnesinin nesneleri için bir fabrikadır.
  İlk parametresiyle uyumlu bir oluşturucuya sahip herhangi bir nesne türü oluşturmak için kullanılabilir.
  
