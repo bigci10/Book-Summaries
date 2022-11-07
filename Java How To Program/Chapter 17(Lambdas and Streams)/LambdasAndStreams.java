@@ -429,7 +429,7 @@ daha basit, daha özlü ve daha az hatayla yazmak için lambdaları ve akışlar
 //					 .forEach(System.out::println);
 //		
 //		String numbers = randomNumbers.ints(10,1,7).mapToObj(String::valueOf)
-//												   .collect(Collectors.joining(" "));
+//							   .collect(Collectors.joining(" "));
 //		
 //	}
 //}
@@ -453,8 +453,8 @@ daha basit, daha özlü ve daha az hatayla yazmak için lambdaları ve akışlar
 	
 	
 	String numbers = randomNumbers.ints(10,1,7)
-								  .mapToObj(String::valueOf)
-								  .collect(Collectors.joining(" ");
+				      .mapToObj(String::valueOf)
+				      .collect(Collectors.joining(" ");
 	
 	boşluklarla ayrılmış 1-6 aralığında 10 rastgele tamsayı içeren bir String oluşturur. 
 	İşlem hattı üç zincirli yöntem çağrısı gerçekleştirir:
@@ -474,3 +474,658 @@ daha basit, daha özlü ve daha az hatayla yazmak için lambdaları ve akışlar
 	//Concatenating Strings with collect..
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+		IntStream Operations 
+	
+	Aşağıda, dizilerden oluşturulan akışlar üzerindeki ek IntStream işlemleri gösterilmektedir.
+	Bu ve önceki örneklerde gösterilen IntStream teknikleri, sırasıyla long ve double değerler için LongStreams ve DoubleStreams için de geçerlidir.
+	
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+//class IntStreamOperations
+//{
+//	public static void main(String[] args) 
+//	{
+//		int[] values = {3,10,6,1,4,8,2,5,9,7};
+//		
+//		System.out.print("Original values: ");
+//		System.out.println(IntStream.of(values)
+//				           .mapToObj(String::valueOf)
+//				           .collect(Collectors.joining(" ")));
+//		
+//		
+//		System.out.printf("%nCount: %d%n", IntStream.of(values).count());
+//		System.out.printf("Min: %d%n",IntStream.of(values).min().getAsInt());
+//		System.out.printf("Max: %d%n",IntStream.of(values).max().getAsInt());
+//		System.out.printf("Sum: %d%n", IntStream.of(values).sum());
+//		System.out.printf("Average: %.2f%n",IntStream.of(values).average().getAsDouble());
+//		
+//		System.out.printf("Product via reduce method %d%n",
+//							IntStream.of(values)
+//							.reduce((x,y) -> x * y).getAsInt());
+//		
+//		System.out.printf("Sum of squares via map and sum: %d%n%n",
+//						 IntStream.of(values)
+//						 .map(x -> x * x)
+//						 .sum());
+//		
+//		System.out.printf("Values displayed in sorted order: %s%n",
+//						 IntStream.of(values)
+//						 .sorted()
+//						 .mapToObj(String::valueOf)
+//						 .collect(Collectors.joining(" ")));
+//		
+//
+//	}
+//}
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 		Creating an IntStream and Displaying Its Values
+ 		
+ 		
+ 	IntStream statik yöntemi bir int array bağımsız değişkeni alır ve dizinin değerlerini işlemek için bir Int-Stream döndürür.
+ 		IntStream.of(values)
+ 				 .mapToObj(String::valueOf)
+ 				 .collect(Collectors.joining(" ")));
+ 	
+ 	akışın öğelerini görüntüler. İlk olarak,  değerler dizisi için bir IntStream oluşturur, ardından mapToObj'yi kullanır ve Şekil gösterildiği gibi yöntemleri collect yapar.
+	Bu tekniği bu örnekte ve sonraki örneklerde akış öğelerini görüntülemek için birkaç kez kullanırız.
+	Bu örnek, aşağıdaki kodu kullanarak dizi değerlerinden  bir IntStream oluşturur:
+	IntStream.of(values)
+	
+	Akışı basitçe depolayabileceğimizi ve yeniden kullanabileceğimizi düşünebilirsiniz. Ancak, bir akış işlem hattı terminal işlemiyle işlendikten sonra, özgün veri kaynağının bir kopyasını tutmadığı için akış yeniden kullanılamaz.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 		Terminal Operations count,min,max,sum and average
+ 
+	 count, akıştaki öğelerin sayısını döndürür.
+	 
+	 min
+	 	 muhtemelen akıştaki en küçük int'yi içeren bir OptionalInt (java.util paketi) döndürür.
+	 	 Herhangi bir akış için, akışta öğe bulunmaması mümkündür.
+	 	 OptionalInt öğesinin döndürülmesi, akış en az bir öğe içeriyorsa min yönteminin en düşük değeri döndürmesini sağlar.
+	 	 Bu örnekte, akışın 10 öğesi olduğunu biliyoruz, bu nedenle minimum değeri elde etmek için class OptionalInt'in getAsInt yöntemini çağırıyoruz.
+	 	 Öğe yoksa, OptionalInt bir int içermez ve getAsInt bir NoSuchElementException atar. 
+	 	 Bunu önlemek için, bunun yerine, varsa OptionalInt'in değerini veya ilettiğiniz değeri veya Aksi takdirde Else değerini döndüren method orElse'yi çağırabilirsiniz.
+	 	 
+	
+	 max
+	 	içindeki en büyük int'yi içeren bir OptionalInt döndürür.
+	 	Yine, en büyük değeri elde etmek için OptionalInt'in getAsInt yöntemini çağırıyoruz, çünkü bu akışın öğeler içerdiğini biliyoruz.
+
+	 
+	 sum
+	 	sum (), akıştaki tüm int'lerin toplamını döndürür
+	 	
+	 
+	 average
+	 	verage, muhtemelen akıştaki int'lerin ortalamasını double türünde bir değer olarak içeren bir OptionalDouble (java.util paketi) döndürür.
+	 	Bu örnekte, akışın öğeleri olduğunu biliyoruz, bu nedenle ortalamayı elde etmek için class OptionalDouble'ın getAsDouble yöntemini çağırıyoruz. 
+	 	Öğe yoksa, OptionalDouble ortalamayı içermez ve getAsDouble bir NoSuchElementException atar. 
+	 	OptionalInt'te olduğu gibi, bu özel durumu önlemek için, varsa OptionalDouble'ın değerini veya aksi takdirde orElse'ye ilettiğiniz değeri döndüren method orElse'yi çağırabilirsiniz.
+
+
+
+	 IntStream sınıfı ayrıca count, min, max, sum ve ortalama işlemlerini bir IntStream öğesinin tek geçişinde gerçekleştiren ve sonuçları bir IntSummaryStatistics nesnesi (java.util paketi) olarak döndüren summaryStatistics yöntemini de sağlar. 
+	 Bu, her bir işlem için bir IntStream'in art arda yeniden işlenmesine göre önemli bir performans artışı sağlar. 
+	 Bu nesnenin her sonucu elde etmek için yöntemleri ve tüm sonuçları özetleyen bir toString yöntemi vardır.
+	 
+	 System.out.println(IntStream.of(values).summaryStatistics());
+	 ve şöyle bir çıktı alırız
+	 IntSummaryStatistics{count = 10, sum =55, min=1,average = 5.50000,max = 10}
+	 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+  		Terminal Operation Reduce
+  
+  	Şimdiye kadar, önceden tanımlanmış çeşitli IntStream reduceları sunduk. 
+  	Kendi reduce işlemlerimizi bir IntStream'in reduce yöntemiyle tanımlayabilirsiniz
+  	
+  	IntStream.of(values).reduce(0,(x,y) -> x + y)
+  	
+  	bir IntStream değerlerinin sum() yerine reduce() kullanarak nasıl toplanacağını gösterir.
+  	Örneğin, öğeleri toplarken kimlik değeri 0'dır, çünkü 0'a eklenen herhangi bir int değeri orijinal int değeriyle sonuçlanır.
+  	Benzer şekilde, öğelerin ürününü alırken kimlik değeri 1'dir, çünkü 1 ile çarpılan herhangi bir int değeri orijinal int değeriyle sonuçlanır.
+  	
+  	Yöntem azaltmanın ikinci bağımsız değişkeni, iki int değeri alan (ikili işlecin sol ve sağ işlenenlerini temsil eden), değerlerle bir hesaplama gerçekleştiren ve sonucu döndüren bir yöntemdir. 
+  	
+  	Lambda değerleri ekler. İki veya daha fazla parametreye sahip bir lambda bunları parantez içine almalıdır.
+  	(x, y) -> x + y
+  	
+  	
+  	Bir reduce'ın argümanı tarafından belirtilen işlem ilişkisel olmalıdır, yani redüksiyonun işlemi akışın öğelerine uyguladığı sıra önemli olmamalıdır. 
+  	Bu önemlidir, çünkü reduce işleminin akış elemanlarına herhangi bir sırayla uygulanmasına izin verilir. 
+  	İlişkisel olmayan bir işlem, işleme sırasına bağlı olarak farklı sonuçlar verebilir. 
+  	
+  	Akışın öğeleri
+  	3 10 6 1 4 8 2 5 9 7
+  	
+  	reduce şu şekilde işlenir:
+  		0+3 --> 3
+  		3+10 --> 13
+  		13 + 6 --> 19
+  		19 + 1 --> 20
+		20 + 4 --> 24
+		24 + 8 --> 32
+		32 + 2 --> 34
+		34 + 5 --> 39
+		39 + 9 --> 48
+		48 + 7 --> 55
+  	
+  	İlk hesaplamanın sol operand olarak kimlik değerini (0) kullandığını ve sonraki her hesaplamanın sol işlenen olarak önceki hesaplamanın sonucunu kullandığını unutmayın.
+  	reduce işlemi, hepsi kullanılıncaya kadar IntStream değerlerinin çalışan bir toplamını üretmeye devam eder ve bu noktada son toplam döndürülür.
+  	
+  
+  	
+  	"Calculating the Product of the Values with Method reduce"
+  		IntStream.of(values).reduce((x,y) -> x * y).getAsInt()
+  		
+  		reducte yönteminin tek bağımsız değişken sürümünü kullanır ve bu sürüm, akışta öğeler varsa, IntStream değerlerinin ürününü içeren bir OptionalInt döndürür; aksi takdirde, OptionalInt bir sonuç içermez.
+  		
+  		Akışın öğeleri
+  		3 10 6 1 4 8 2 5 9 7
+  		
+  		3 * 10 --> 30
+		30 * 6 --> 180
+		180 * 1 --> 180
+		180 * 4 --> 720
+		720 * 8 --> 5,760
+		5,760 * 2 --> 11,520
+		11,520 * 5 --> 57,600
+		57,600 * 9 --> 518,400
+		518,400 * 7 --> 3,628,800
+		
+		Bu işlem, hepsi kullanılıncaya kadar IntStream değerlerinin çalışan bir ürününü üretmeye devam eder ve bu noktada nihai ürün çıktısını alırız.
+		Ancak, akış boş olsaydı, bu reduce kimlik değerini (1) döndürür ve bu da boş bir akış için beklenen sonuç olmazdı.
+		
+
+	"Summing the Squares of the Values "
+		Şimdi akışın elemanlarının karelerini toplamayı düşünün. 
+		Akış işlem hatlarınızı uygularken, işleme adımlarını anlaşılması kolay görevlere ayırmak yararlı olur. 
+		Akış öğelerinin karelerini toplamak iki ayrı görev gerektirir:
+		
+		1-her akış elemanının değerinin karesini alma
+		2-bu kareleri toplamını hesaplama
+		
+		IntStream.of(values).map(x -> x * x).sum();
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 				Functional Interfaces 
+	Java SE 8'in gelişmiş arabirim özellikleri varsayılan yöntemler ve statik yöntemler tanıtıldı
+	ve işlevsel arabirim(functional interface) kavramı, tam olarak bir soyut yöntem içeren (ve ayrıca default ve statik yöntemler de içerebilir) bir arabirim kavramını tartıştı.
+	
+	İşlevsel arayüzler, işlevsel tarzda Java programlamada yaygın olarak kullanılmaktadır. 
+
+ 	Java'da saf fonksiyonlar, bu bölümün örneklerinde şimdiye kadar gördüğünüz gibi, tipik olarak lambdas olarak tanımlanan fonksiyonel arayüzleri uygulayan yöntemlerdir. 
+ 	Durum değişiklikleri, verileri yöntemden yönteme aktararak meydana gelir. Hiçbir veri paylaşılmaz.	
+ 	Saf fonksiyonlar daha güvenlidir çünkü bir programın durumunu (değişkenler) değiştirmezler. Bu aynı zamanda onları hataya daha az eğilimli hale getirir ve böylece test etmeyi, değiştirmeyi ve hata ayıklamayı kolaylaştırır. 		
+ 	
+ 				
+ 	"Bazı Fonksiyonel Arayüzler
+ 		
+ 		BinaryOperator<T>
+ 			Aynı türden iki parametre alan ve bu türden bir değer döndüren bir yöntemi temsil eder.
+ 		
+ 		Consumer<T>
+ 			void döndüren tek parametreli bir yöntemi temsil eder.
+ 		
+ 		Function<T,R>
+ 			Parametre üzerinde bir görev gerçekleştiren ve büyük olasılıkla parametreden farklı türde bir sonuç döndüren tek parametreli bir yöntemi temsil eder.
+ 		
+ 		Predicate<T>
+ 			Boole sonucu döndüren tek parametreli bir yöntemi temsil eder.
+ 			
+ 		Supplier<T>
+ 			Sonuç döndüren parametresiz bir yöntemi temsil eder. 
+ 		
+ 		UnaryOperator<T>
+ 			Parametresiyle aynı türde bir sonuç döndüren tek parametreli bir yöntemi temsil eder.
+ 			
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 		Lambdas: A Deeper Look
+
+	"Type Inference and a Lambda’s Target Type"
+		Lambda ifadeleri, işlevsel arabirimlerin beklendiği her yerde kullanılabilir.
+		Java derleyicisi genellikle lambda'nın parametrelerinin türlerini ve lambda tarafından döndürülen türü, lambda'nın kullanıldığı bağlamdan çıkarabilir.
+		Bu, lambda'nın hedef türü tarafından, lambda'nın kodda göründüğü yerde beklenen işlevsel arabirim türüne göre belirlenir. 
+		
+		IntStream.rangeClosed(1,10).map((int x) -> {return x * 2;}).sum()
+		hedef tür, bir int parametresi alan ve bir int sonucu döndüren bir yöntemi temsil eden IntUnaryOperator'dur.
+		Bu durumda, lambda parametresinin türü açıkça int olarak bildirilir ve derleyici lambda'nın dönüş türünü int olarak çıkarır, 
+		çünkü IntUnaryOperator'un gerektirdiği şey budur.
+		
+		Derleyici ayrıca bir lambda parametresinin türünü de çıkarabilir.
+		
+		IntStream.rangeClosed(1,10).filter(x -> x % 2 == 0).map(x -> x * 3).sum()
+		hedef tür, bir int parametresi alan ve bir boole sonucu döndüren bir yöntemi temsil eden IntPredicate'tir. Bu durumda, derleyici lambda parametresi x'in türünü int olarak çıkarır, 
+		çünkü IntPredicate'in gerektirdiği şey budur. 
+		
+		Genellikle derleyicinin örneklerimizde lambda parametresinin türünü çıkarsamasına izin veririz.
+		
+	
+	"Scope and Lambdas"
+		Yöntemlerin aksine, lambdaların kendi kapsamları yoktur.
+		Bu nedenle, örneğin, bir çevreleyen yöntemin yerel değişkenlerini aynı adlara sahip lambda parametreleriyle gölgeleyemezsiniz.
+		Bu durumda, yöntemin yerel değişkenleri ve lambda parametreleri aynı kapsamda olduğundan bir derleme hatası oluşur. 
+
+
+	
+	"Capturing Lambdas and final Local Variables"
+		Çevreleyen yöntemden (lambda'nın sözcüksel kapsamı olarak bilinir) yerel bir değişkene başvuran bir lambda, bir capturing lambdasıdır.
+		Böyle bir lambda için, derleyici localvariable'ın değerini yakalar ve lambda sonunda yürütüldüğünde lambda'nın değeri kullanabilmesini sağlamak için lambda ile birlikte depolar.
+		Bu önemlidir, çünkü bir lambda'yı, sözlük kapsamı artık mevcut olmadığında lambda'yı yürüten başka bir yönteme geçirebilirsiniz.
+		Bir lambda'nın sözlük kapsamında başvurduğu herhangi bir yerel değişken final olmalıdır.
+		Böyle bir değişken ya açıkça final olarak ilan edilebilir ya da effectively final olabilir (Java SE 8).
+		Effectively final değişken için, derleyici yerel değişkenin final olarak bildirilmiş olabileceği sonucuna varır, çünkü içine alma yöntemi bildirildikten ve başlatıldıktan sonra değişkeni hiçbir zaman değiştirmez. 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 				Stream<Integer> Manipulations
+ 	Şimdiye kadar IntStreams'i işledik. 
+ 	Akış, başvuru türündeki nesneler üzerinde görevler gerçekleştirir. 
+ 	IntStream yalnızca ortak int işlemleri için yöntemler sağlayan int için optimize edilmiş bir Akıştır. 
+ 	Aşağıda, önceki örneklerdekine benzer teknikler kullanarak bir Akışta filtreleme ve sıralama gerçekleştirir ve bir akış işlem hattının sonuçlarının sonraki işlemler için yeni bir koleksiyona nasıl yerleştirileceğini gösterir. 
+ 	Sonraki örneklerde diğer referans türlerinin Akışları ile çalışacağız.
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+//class ArraysAndStreams
+//{
+//	public static void main(String[] args) 
+//	{
+//		Integer[] values = {2,9,5,0,3,7,1,4,8,6};
+//		
+//		System.out.printf("Original values%s%n", Arrays.asList(values));
+//		
+//		System.out.printf("Sorted values",
+//						 Arrays.stream(values)
+//						 .sorted()
+//						 .collect(Collectors.toList()));
+//		
+//		List<Integer> greaterThan4 = Arrays.stream(values)
+//						   .filter(value -> value > 4)
+//						   .collect(Collectors.toList());
+//		
+//		System.out.printf("Sorted values greater than 4: %s%n",
+//						 Arrays.stream(values)
+//						 .filter(value -> value > 4)
+//						 .sorted()
+//						 .collect(Collectors.toList()));
+//		
+//		System.out.printf("Values Greater than 4 (ascending with streams): %s%n",
+//						 greaterThan4.stream()
+//						 .sorted()
+//						 .collect(Collectors.toList()));
+//		
+//	}
+//}
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+			Stream<String> Manipulations
+
+	Şimdiye kadar, yalnızca int değerlerinin ve integer nesnelerinin akışlarını değiştirdik. 
+	Bu örnek boyunca, ilk harfi büyük harfle renk adlarıyla başlatılan String dizi dizelerini kullanırız.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+//class ArraysAndStreams2
+//{
+//	public static void main(string[] args) 
+//	{
+//		String[] strings = {"RED","orange","yello","GREEN","BLUE","İNDİGO"};
+//		
+//		system.out.printf("original strings: %s%n",arrays.asList(strings));
+//		
+//		system.out.printf("STRİNGS İN UPPARCASE: %s%n",
+//						 arrays.stream(strings)
+//						 .map(String::TOUPPERCASE)
+//						 .collect(Collectors.toList()));
+//		
+//		
+//		
+//		system.out.printf("STRİNGS LESS THAN N SORTED ASCENDİNG: %s%n",
+//					     arrays.stream(strings)
+//					     .filter(s -> s.compareToIgnoreCase("n") < 0)
+//					     .sorted(String.CASE_INSENSITIVE_ORDER)
+//					     .collect(Collectors.toList()));
+//		
+//
+//	}
+//}
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+  			Mapping Strings to Uppercase
+ 	
+ 		Arrays.stream(strings)
+ 			.map(String::toUpperCase)
+ 			.collect(Collectors.toList())
+ 		
+ 		bu stream işlem hattı stringleri büyük harflerle görüntüler.
+ 		1. satır = içine bir string alan akış oluşturur
+ 		2. satır = akışın içinde ki her öğeye stringden gelen toUpperCase metodunu uygular
+ 		3. satır = Listeye çevirir.
+ 		
+ 	
+ 	Akış yöntemi map, parametresiyle bir görevi gerçekleştiren ve ardından sonucu döndüren tek parametreli bir yöntemi temsil eden Function işlevsel arabirimini uygulayan bir nesne alır.
+ 	
+ 	Arrays.stream(strings)
+ 	.filters(s -> s.compareToIgnoreCase("n") < 0)
+ 	.sorted(String.CASE_INSENSITIVE_ORDER)
+ 	.collect(Collectors.toList())
+ 	
+ 	Bu durumda, bağımsız değişken olarak bir compareToIgnoreCase alan Stream yönteminin sıralanmış sürümünü çağırır. 
+ 	compareToIgnoreCase, karşılaştırılan ilk değer ikinciden küçükse negatif bir değer, eşitse 0 ve ilk değer ikinciden büyükse pozitif bir değer döndüren bir karşılaştırma yöntemi tanımlar.
+ 	Varsayılan olarak, sıralanan yöntem türün doğal sırasını kullanır—Dizeler için doğal düzen büyük\/küçük harfe duyarlıdır, yani 'Z' harf 'a'dan küçüktür. 
+ 	Bu sebeple büyük küçük harf duyarlılığını es geçmek için String.CASE_INSENSITIVE_ORDER yöntemini kullanarak sıralama işlemimizi yapıyoruz.
+ 	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 			Stream<Employee> Manipulations
+
+	Bu bölümdeki önceki örnekler, ilkel türlerde (int gibi) ve Java sınıf kitaplığı türlerinde (Tamsayı ve String gibi) akış manipülasyonları gerçekleştirdi. 
+	Tabii ki, programcı tanımlı türlerin koleksiyonları üzerinde de işlemler gerçekleştirebilirsiniz.
+	
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+//class Employee
+//{
+//	private String firstName;
+//	private String lastName;
+//	private double salary;
+//	private String department;
+//	
+//	public Employee(String firstName, String lastName, double salary, String department)
+//	{
+//		this.firstName = firstName;
+//		this.lastName = lastName;
+//		this.salary = salary;
+//		this.department = department;
+//	}
+//	
+//	public String getFirstName()
+//	{
+//		return firstName;
+//	}
+//	
+//	public String getLastName()
+//	{
+//		return lastName;
+//	}
+//	
+//	public double getSalary()
+//	{
+//		return salary;
+//	}
+//	
+//	public String getDepartment()
+//	{
+//		return department;
+//	}
+//	
+//	public String getName()
+//	{
+//		return String.format("%s %s", getFirstName(), getLastName());
+//	}
+//	
+//	public String toString()
+//	{
+//		return String.format("%-8s %-8s %8.2f   %s", getFirstName(), getLastName(), getSalary(), getDepartment());
+//	}
+//}
+//
+//
+//class ProcessingEmployees
+//{
+//	public static void main(String[] args) 
+//	{
+//		
+//		Employee[] employees = {new Employee("Jason","Red",5000,"IT"),
+//				new Employee("Ashley","Green",7600,"IT"),
+//				new Employee("Matthew","Indigo",3587.5,"Sales"),
+//				new Employee("James","Indigo",4700,"Marketing")
+//			   };
+//		
+//		
+//		// get List view of the Employees
+//		List<Employee> list = Arrays.asList(employees);
+//		
+//		//display all Employees
+//		System.out.println("Complete Employee List:");
+//		list.stream().forEach(System.out::println);
+//		
+//		
+//		
+//		//Java SE 9: Creating an Immutable List<Employee> with List Method of
+//		List<Employee> listIm = List.of(new Employee("Jason","Red",5000,"IT"),
+//								      new Employee("Ashley","Green",7600,"IT"),
+//								      new Employee("Matthew","Indigo",3587.5,"Sales"),
+//								      new Employee("James","Indigo",4700,"Marketing")
+//				);
+//		
+//		
+//		/*.2 Filtering Employees with Salaries in a Specified Range */
+//		Predicate<Employee> fourToSixThousand = e -> (e.getSalary() >= 4000 && e.getSalary() <= 6000);
+//		
+//		System.out.printf("%nEmployees earning $4000-$6000 per month sorted by salary:%n");
+//		
+//		list.stream()
+//		.filter(fourToSixThousand)
+//		.sorted(Comparator.comparing(Employee::getSalary))
+//		.forEach(System.out::println);
+//		
+//		
+//		System.out.printf("%nFirst employee who earns $4000-6000:%n%s%n",list.stream()
+//																		 .filter(fourToSixThousand)
+//																		 .findFirst()
+//																		 .get());
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		  yukarıda ki kodda filtreleme yöntemi için fourToSixThousand isimli bir predicate Arayüzü türünden bir emplooye list tanımlıyoruz.
+//		  ve bunları salarysi $4000 ve 6000$ aralığında olacak şekilde sıralıyoruz.
+//		  Sıralamayı yaparkenComparator arabiriminin statik yöntemi olan comparing kullanırız, bu da bağımsız değişkeni üzerinde bir görev gerçekleştiren ve sonucu döndüren bir Function alır.
+//		  
+//		  Find-First:findFirst—akış ardışık düzenini işleyen ve akışın ara işlemlerinden ilk nesne bulunur bulunmaz işlemeyi sonlandıran kısa devreli bir terminal işlemi(Optional Döndürür).
+//		  
+//		   
+//		  FindAny:
+//		  	findFirst'e benzer, ancak önceki ara işlemlere dayalı olarak herhangi bir akış öğesini bulur ve döndürür. 
+//		  	Böyle bir öğe bulunduğunda akış ardışık düzeninin işlenmesini hemen sonlandırır. 
+//		  	Genellikle, findFirst sıralı akışlarla kullanılır ve findAny paralel akışlarla kullanılır.
+//		  	
+//		  
+//		  anyMatch:
+//		  	Herhangi bir akış öğesinin belirtilen bir koşulla eşleşip eşleşmediğini belirler. 
+//		  	En az bir akış öğesi eşleşirse true değerini ve aksi takdirde false değerini döndürür. 
+//		  	Bir öğe eşleşirse akış işlem hattının işlenmesini hemen sonlandırır.
+//		  	
+//		  allMatch:
+//		  	Akıştaki tüm öğelerin belirli bir koşulla eşleşip eşleşmediğini belirler. 
+//		  	Aksi halde true ve false döndürür. 
+//		  	Herhangi bir eleman eşleşmezse derhal işlem hattını sonlandırır.
+//		  	
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 		Sorting Employees By Multiple Fields
+//		 	Bi sonraki örneğimizde nesneleri birden çok alana göre sıralamak için akışların nasıl kullanılacağını gösterir. 
+//		 	Bu örnekte, Çalışanları soyadına göre sıralarız, ardından aynı soyadına sahip Çalışanlar için onları adlarına göre de sıralarız. 
+//		 	Bunu yapmak için, her biri anEmployee alan ve bir String döndüren iki İşlev oluşturarak başlarız:
+//		 	bunlar byFirstName , ve ByLastName isimli iki metodumuz olsun 
+//		 	
+//		 	Daha sonra, bu İşlevleri, önce iki Çalışanı soyadına göre karşılaştıran, ardından adlarıyla karşılaştıran bir Comparator oluşturmak için kullanırız.
+//		
+//			Comparator<Employee> lastThenFirst = Comparator.comparing(Employee::getLastName)
+//									.thenComparing(Employee::getFirstName);
+//		
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		Function<Employee,String> byFirstName = Employee::getFirstName;
+//		Function<Employee,String> byLastName = Employee::getLastName;
+//		
+//		Comparator<Employee> lastThenFirst = Comparator.comparing(byLastName).thenComparing(byFirstName);
+//		
+//		System.out.printf("%nEmployees in ascending order by last name then first :%n");
+//		
+//		list.stream()
+//			.sorted(lastThenFirst)
+//			.forEach(System.out::println);
+//		
+//		System.out.printf("%nEmployees in descending order by last name then first: %n");
+//		
+//		list.stream()
+//			.sorted(lastThenFirst.reversed())
+//			.forEach(System.out::println);
+//		
+//	
+//		
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 java.util.function paketindeki birçok işlevsel arabirim, işlevsellik oluşturmanıza olanak tanıyan varsayılan yöntemler sağlar.
+//		 
+//		 Örneğin, üç varsayılan yöntem içeren IntPredicate arabirimini düşünün:
+//		 	and:
+//		 		çağrıldığı IntPredicate ile argüman olarak aldığı IntPredicate arasında kısa devre değerlendirmesi ile mantıksal bir AND gerçekleştirir. 
+//			
+//			negate: 
+//				çağrıldığı IntPredicate'in boole değerini tersine çevirir. 
+//			
+//			or:
+//				çağrıldığı IntPredicate ile bağımsız değişken olarak aldığı IntPredicate arasında kısa devre değerlendirmesi ile mantıksal bir OR gerçekleştirir.
+//				
+//		
+//		 Bu yöntemleri kullanabilir ve daha karmaşık durumlar oluşturmak için nesneleri intpredicate edebilirsiniz. 
+//		 
+//		 Örneğin, her biri lambdas ile başlatılan aşağıdaki iki intpredicate'i düşünün:
+//		 	
+//		 	IntPredicate even = value -> value % 2 == 0;
+//		 	IntPredicate greaterThan5 = value -> value > 5;
+//		 	
+//		 	Bir IntStream'de 5'ten büyük tüm çift tamsayıları bulmak için, aşağıdaki oluşturulmuş IntPredicate'i IntStream yöntem filtresine geçirebilirsiniz:
+//		 		even.and(greaterThan5)
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 	Mapping Employees to Unique-Last-Name Strings.
+//		
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		System.out.printf("%nUnique employee last names:%n");
+//		list.stream()
+//			.map(Employee::getLastName)
+//			.distinct()
+//			.sorted()
+//			.forEach(System.out::println);
+//		
+//		
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 	Grouping Employees By Department
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		System.out.printf("%nEmployees by department:%n");
+//		Map<String, List<Employee>> groupByDepartment = list.stream()
+//								.collect(Collectors.groupingBy(Employee::getDepartment));
+//		
+//		groupByDepartment.forEach((department,employeesInDeparatment) -> 
+//		{System.out.printf("%n%s%n", department);
+//		employeesInDeparatment.forEach(employee -> System.out.printf(" %s%n",employee));});
+//	
+//	
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 	Collect'in bağımsız değişkeninin, verilerin yararlı bir formda nasıl özetleneceğini belirten bir Toplayıcı olduğunu hatırlayın. 
+//		 	Bu durumda, akıştaki nesneleri sınıflandıran bir İşlev alan Collectors statik yöntemi groupingBy tarafından döndürülen Collector'ı kullanırız.
+//		 	Bu İşlev tarafından döndürülen değerler, bir Map koleksiyonunda key olarak kullanılır.
+//		 	Karşılık gelen değerler, varsayılan olarak, belirli bir kategorideki akış öğelerini içeren Listeler'dir.
+//		 	Bu Collector ile collect yöntemi kullanıldığında, sonuç, her String <Employee>anahtarının bir departman olduğu ve her Listenin o departmandaki Çalışanları içerdiği bir Map<String,<Employee> List> olur.
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		
+//		
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 	Counting The Number of Employees in Each Department
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		System.out.printf("%nCount of Employees by department:%n");
+//		Map<String,Long> employeeCountByDepartment = list.stream()
+//							     .collect(Collectors.groupingBy(Employee::getDepartment,Collectors.counting()));
+//		employeeCountByDepartment.forEach((department,count) -> System.out.printf("%s has %d employee(s)%n",department,count));
+//	
+//	
+//	
+//		/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+//		 	Summing and Averagin Employee Salaries 
+//		 	
+//		  Daha önce, ilkel tür öğelerin akışlarının mapToObj yöntemiyle (IntStream, LongStream ve DoubleStream sınıflarında bulunur) nesne akışlarına eşlenebileceğini göstermiştik. 
+//		  Benzer şekilde, bir nesne akışı bir IntStream, LongStreamor DoubleStream ile eşlenebilir.
+//		  Bu örnekte, toplamı ve ortalamayı hesaplayabilmemiz için Çalışan nesnelerini maaşlarıyla eşleştiririz.
+//		--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//		
+//		System.out.printf("%nSum of Employees' salaries (via sum method): %.2f%n",list.stream()
+//						 .mapToDouble(Employee::getSalary)
+//						 .sum());
+//		
+//		
+//		System.out.printf("Sum of employee salaries (via reduce method): %.2f%n",list.stream()
+//											.mapToDouble(Employee::getSalary)
+//											.reduce(0,(value1,value2) -> value1 + value2));
+//		
+//		System.out.printf("Average of Employees salaries: %.2f%n",list.stream()
+//									  .mapToDouble(Employee::getSalary)
+//									  .average()
+//									  .getAsDouble());
+//	}
+//
+//	
+//
+//	
+//}
+
+
+
+
+/*
+ 		Creating a Stream<String> from a File
+ 		
+ 	
+ */
