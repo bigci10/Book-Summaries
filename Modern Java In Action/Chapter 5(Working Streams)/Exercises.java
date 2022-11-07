@@ -105,30 +105,30 @@ class Solutions
 		
 		//Solution 1 
 		List<Transaction> tr2011 = transactions.stream()
-								   .filter(s -> s.getYear() == 2011)
-								   .sorted(Comparator.comparing(Transaction::getValue))
-								   .toList();
+						       .filter(s -> s.getYear() == 2011)
+						       .sorted(Comparator.comparing(Transaction::getValue))
+						       .toList();
 		
 		
 		//Solution 2 
 		List<String> solution2 = transactions.stream()
-									  .map(s -> s.getTrader().getCity())
-									  .distinct()
-									  .toList();
+						     .map(s -> s.getTrader().getCity())
+						     .distinct()
+						     .toList();
 		
 		//Solution 3 
 		List<Trader> solution3 = transactions.stream()
-											 .map(transaction -> transaction.getTrader())
-											 .filter(isCambridge -> isCambridge.getCity().equals("Cambridge"))
-											 .distinct()
-											 .sorted(Comparator.comparing(Trader::getName))
-											 .toList();
+						     .map(transaction -> transaction.getTrader())
+						     .filter(isCambridge -> isCambridge.getCity().equals("Cambridge"))
+						     .distinct()
+						     .sorted(Comparator.comparing(Trader::getName))
+						     .toList();
 		
 		//Solution 4 
 		List<Trader> solution4 = transactions.stream()
-											 .map(trader -> trader.getTrader())
-											 .sorted()
-											 .toList();
+						     .map(trader -> trader.getTrader())
+						     .sorted()
+						     .toList();
 		//Solution 5
 		boolean solution5 = transactions.stream()
 		       .anyMatch(transaction -> transaction.getTrader().getCity().equals("Milan"));
@@ -136,19 +136,19 @@ class Solutions
 		
 		//Solution 6
 		transactions.stream()
-					.filter(fromCambridge -> fromCambridge.getTrader().getCity().equals("Cambridge"))
-					.map(Transaction::getValue)
-					.forEach(System.out::println);
+			    .filter(fromCambridge -> fromCambridge.getTrader().getCity().equals("Cambridge"))
+			    .map(Transaction::getValue)
+			    .forEach(System.out::println);
 		
 		//Solution 7
 		
 		Optional<Integer> maxtValue = transactions.stream()
-				.map(Transaction::getValue)
-				.reduce(Integer::max);
+							  .map(Transaction::getValue)
+						          .reduce(Integer::max);
 		
 		//Solution 8
 		Optional<Transaction> minValue = transactions.stream()
-				.reduce((t1, t2) -> t1.getValue() < t2.getValue() ? t1 : t2);
+							     .reduce((t1, t2) -> t1.getValue() < t2.getValue() ? t1 : t2);
 	
 				
 	}
