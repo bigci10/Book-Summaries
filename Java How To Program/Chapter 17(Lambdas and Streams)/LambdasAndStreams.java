@@ -1124,8 +1124,447 @@ daha basit, daha özlü ve daha az hatayla yazmak için lambdaları ve akışlar
 
 
 
-/*
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
  		Creating a Stream<String> from a File
  		
+	Aşağıdaki kod, bir dosyadaki her sözcüğün oluşum sayısını özetlemek için lambdaları ve akışları kullanır, 
+	ardından sözcüklerin özetini başlangıç harfine göre gruplandırılmış alfabetik sırada görüntüler. 
+	Buna genellikle concordance denir:	
+	
+	Uyumlar genellikle yayınlanmış çalışmaları analiz etmek için kullanılır. 
+	Örneğin, William Shakespeare'in ve Christopher Marlowe'un eserlerinin (diğerlerinin yanı sıra) uyumları, aynı kişi olup olmadıklarını sorgulamak için kullanılmıştır.
+	
+	 Aşağıdaki kodun 14. satırı, metin satırlarını tek tek sözcüklerine bölmek için kullanacağımız normal bir ifade Deseni oluşturur.
+	 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+//class StreamsOfLines
+//{
+//	public static void main(String[] args) throws IOException 
+//	{
+//		Pattern pattern = Pattern.compile("\\ss+");
+//		
+//		Map<String, Long> wordCounts = Files.lines(Paths.get("Chapter2paragraph.txt"))
+//									   .flatMap(line -> pattern.splitAsStream(line))
+//									   .collect(Collectors.groupingBy(String::toLowerCase,TreeMap::new,Collectors.counting()));
+//		
+//		wordsCounts.entrySet()
+//				   .stream()
+//				   .collect(Collectors.groupingBy(entry -> entry.getKey().charAt(0),
+//						   							TreeMap::new, Collectors.toList()))
+//				   .forEach((letter,wordList) -> {
+//					   	System.out.printf("%n%C%n",letter);
+//					   	wordList.stream().forEach(word -> System.out.printf("%13s: %d%n"),word.getKey(), word.getValue()));
+//				   });
+//	}
+//	
+//	
+//}
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 				Summarizing the Occurrences of Each Word in the File
  	
- */
+ 		Map<String, Long> wordCounts = 
+ 			Files.lines(Paths.get("Chapter2Paragraph.txt")) 
+ 				.flatMap(line -> pattern.splitAsStream(line)) 
+ 				.collect(Collectors.groupingBy(String::toLowerCase,
+ 					TreeMap::new, Collectors.counting()));
+ 					
+ 		
+ 		18. satır, bir<String> dosyadaki metin satırlarını okuyan ve her satırı bir Dize olarak döndüren bir Akış döndüren Files lines yöntemi (Java SE 8'e eklenmiştir) çağırır.
+		
+		Satır 19, metnin her satırını ayrı sözcüklere bölmek için Stream yöntemi flatMap kullanır.
+		
+		flatMap yöntemi, bir nesneyi öğe akışına eşleyen bir <Function> alır.
+		
+		Bu durumda, nesne sözcükleri içeren bir Stringdir ve sonuç Stream<String> tek sözcükler için bir Akış'tır.
+		
+		Dizeyi tek tek sözcüklerine tokenize etmek için  Pattern.splitAsStream kullanılmuştır
+		
+		20-21 arası satırlar, her kelimenin sıklığını saymak ve anahtarlarını sıralanmış sırada tuttuğu için sözcükleri ve sayımlarını bir TreeMap<String, Long> bir TreeMap'e yerleştirmek için Stream method collect kullanır.
+		
+		Burada, Collectors method groupingBy öğesinin classifier, Map factory ve downstream Collector olmak üzere üç bağımsız değişken alan bir sürümünü kullanıyoruz.
+		
+		Classifier, sonuçta elde edilen Map yöntem başvurusunda anahtar olarak kullanılmak üzere nesneleri döndüren bir <Function> , String::toLowerCase her sözcüğü küçük harfe dönüştürür. Map factory, Supplier functional interface uygulayan ve yeni bir Map koleksiyonu döndüren bir nesnedir ve burada anahtarlarını sıralanmış sırada tutan bir TreeMap döndüren TreeMap::new yapıcı referansını kullanırız.
+		
+		Derleyici, bir oluşturucu başvurusunu yeni bir TreeMap döndüren parametresiz lambda'ya dönüştürür. Collectors.counting(), akıştaki her anahtarın oluşum sayısını belirleyen Collectordur
+		.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+ 
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 				Displaying the Summary Grouped by Starting Letter
+ 		
+
+ 	
+ 	wordCounts.entrySet() 
+ 			  .stream()
+ 			  .collect( 
+ 				Collectors.groupingBy(entry -> entry.getKey().charAt(0),
+ 					TreeMap::new, Collectors.toList())) 
+ 			  .forEach((letter, wordList) -> { 
+ 				 System.out.printf("%n%C%n", letter); 
+ 				 wordList.stream().forEach(word -> System.out.printf( 
+ 					"%13s: %d%n", word.getKey(), word.getValue())); 
+ 			  });	
+ 			  
+ 			  		
+    Bu kod, her anahtarın bir Karakter olduğu ve karşılık gelen değerin, anahtarın Karakter ile başladığı wordCounts'taki anahtar-değer çiftlerinin bir Listesi olduğu yeni bir Map oluşturur. 
+    kod aşağıdaki görevleri gerçekleştirir:
+    
+    Öncelikle, wordCounts'taki anahtar-değer çiftlerini işlemek için bir Akış almamız gerekir. Map, Akışları döndüren herhangi bir yöntem içermez.
+    
+    -Bu nedenle, satır 24, her biri wordCounts'tan bir anahtar-değer çifti içeren Map.Entry nesneleri kümesi almak için mapin entryset metodunu wordcountsdan çağırır. 
+    Bu, Set<Map.Entry<String, Long>> türünde bir nesne üretir.
+    
+    - Satır 25, Stream<Map.Entry<String, Long>> almak için Set method stream'i çağırır.
+    
+    -26-28 arası satırlar Stream yöntemini üç bağımsız değişkenle toplar: bir classifier, bir Map factory ve downstream akış Collector. 
+    	Bu durumda classifer entry.getKey alır.
+    	Entry daha sonra anahtarın ilk karakterini almak için charAt String yöntemini kullanır 
+    	ve sonuçta elde edilen Eşlemede bir Karakter anahtarı haline gelir.
+    	Bir kez daha, anahtarlarını sıralanmış bir şekilde tutan bir TreeMap oluşturmak için Map factory olarak TreeMap::new yapıcı referansını kullanıyoruz.
+   		downstream Collector (Collectors.toList()), Map.Entry nesnelerini bir List koleksiyonuna yerleştirir. 
+   		Toplamanın sonucu bir Map<Character, List<Map.Entry<String, Long>>>.
+
+	-Son olarak, kelimelerin özetini ve sayımlarını harfle (yani, uyum) görüntülemek için, 29-33 satırları Map forEach yöntemine bir lambda iletir.
+		Lambda (BiConsumer) iki parametre harfi alır ve wordList, önceki Collector işlemi tarafından üretilen Map her anahtar-değer çifti için sırasıyla Karakter anahtarını ve List değerini temsil eder.
+		Bu lambda'nın gövdesinin iki ifadesi vardır, bu yüzden kıvırcık içine alınmalıdır.
+		
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 				Streams of Random Values
+ 	
+ 	Aşağıdaki kod, 60.000.000 kez yuvarlamak, frekansları hesaplamak ve sonuçları görüntülemek için lambdas, akışlar, iç yineleme ve değiştirilebilir değişkenler kullanmadan, her şeyi yapan tek bir ifadeyle bu programları yeniden uygular.
+ 	
+ 	Secururandom'un güvenli rastgele sayılar üretmek için kullandığı teknikler, Random (paketi java.util) tarafından kullanılanlardan daha yavaştır.
+ 	Bu nedenle, Aşağıdaki kodu , bilgisayarlarımızda çalıştırdığınızda donuyor gibi görünebilir, tamamlanması bir dakikadan fazla sürdü. 
+ 	Zaman kazanmak için, Random sınıfını kullanarak bu örneğin yürütülmesini hızlandırabilirsiniz.
+ 	
+ 	
+ 	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+//class RandomIntStream
+//{
+//	public static void main(String[] args) 
+//	{
+//		SecureRandom random = new SecureRandom();
+//		
+//		//roll a die 60,000,000 times and summarize the results.
+//		System.out.printf("%-6s%s%n", "Face", "Frequency");
+//		random.ints(60_000_000,1,7).boxed()
+//		.collect(Collectors.groupingBy(Function.identity(),
+//				Collectors.counting()))
+//		.forEach((face,frequency) -> System.out.printf("%-6d%d%n",face,frequency));
+//		
+//	}
+//}
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 	SecureRandom sınıfı, Random sınıfından (java.util paketi) devraldığı ints, longs ve double yöntemlerini overload etmiştir. 
+ 	Bu yöntemler, rasgele sayı akışlarını temsil eden sırasıyla bir IntStream, bir LongStream veya DoubleStream döndürür.
+ 	
+ 	-ints(long)—belirtilen sayıda rastgele int içeren bir IntStream oluşturur.
+ 	
+ 	-ints(int, int)—ilk bağımsız değişkenden başlayarak ikinci bağımsız değişkene kadar olan ancak bu bağımsız değişkeni içermeyen yarı açık aralıktaki rastgele int değerlerinin sonsuz akışı için bir IntStream oluşturur.
+ 	
+ 	-ints(long, int, int), ilk bağımsız değişkenden başlayarak ikinci bağımsız değişkene kadar olan ancak bu bağımsız değişkeni içermeyen aralıkta belirtilen sayıda rasgele int değerine sahip bir IntStream oluşturur.
+ 	
+ 	
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+		Converting an IntStream to a Stream<Integer>
+		
+		Ne yazık ki, Java koleksiyonlarda ilkel değerlere izin vermez, bu nedenle  önce IntStream'i bir Akışa dönüştürmeliyiz<Integer>. Bunu, IntStream yöntemini kutulu olarak çağırarak yaparız.
+	
+		-15-16 arası satırlar, sonuçları bir Map<Integer, Long> şeklinde özetlemek için Stream yöntemini çağırır. 
+		Collectors method groupingBy (satır 15) için ilk bağımsız değişken, yalnızca bağımsız değişkenini döndüren bir İşlev oluşturan interface Function'dan statik yöntem identity çağırır.
+		
+		Bu, gerçek rastgele değerlerin Map anahtarları olarak kullanılmasına izin verir. GroupingBy yönteminin ikinci bağımsız değişkeni, her anahtarın oluşum sayısını sayar.
+
+		17-18 arası satırlar, sonuçların özetini görüntülemek için ortaya çıkan Map'in forEach yöntemini çağırır. Bu yöntem, BiConsumer işlevsel arabirimini bağımsız değişken olarak uygulayan bir nesne alır.
+		
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/		
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 					Infinite Streams
+
+ 		Dizi veya koleksiyon gibi bir veri yapısı, her zaman sonlu sayıda öğeyi temsil eder, tüm öğeler bellekte depolanır ve bellek sonludur.
+ 		Tabii ki, sonlu bir veri yapısından oluşturulan herhangi bir akış, bu bölümün önceki örneklerinde olduğu gibi, sonlu sayıda öğeye sahip olacaktır.
+ 		
+ 		Lazy evaluation, bilinmeyen, potansiyel olarak sonsuz sayıda öğeyi temsil eden sonsuz akışlarla çalışmayı mümkün kılar.
+ 		Örneğin, nextPrime'ı her çağırdığınızda sırayla bir sonraki asal sayıyı üreten bir yöntem tanımlayabilirsiniz.
+ 		Daha sonra bunu, kavramsal olarak tüm asal sayıları temsil eden sonsuz bir akış tanımlamak için kullanabilirsiniz.
+ 		
+ 		Ancak, bir terminal işlemi gerçekleştirene kadar akışlar lazy olduğundan, bir terminal işlemi gerçekleştirildiğinde gerçekte hesaplanan toplam öğe sayısını kısıtlamak için ara işlemleri kullanabilirsiniz.
+ 		
+ 		Görev:Create an infinite stream representing all prime numbers
+			  If the prime number is less than 10,000 
+			  Display the prime number
+		
+		Sonsuz bir akışla başlasak bile, yalnızca 10.000'den küçük sonlu asal küme görüntülenir.
+		
+		Akış arabirimleri yöntemlerinden iterator ve generator ile sonsuz akışlar oluşturursunuz.
+		
+					IntStream Method iterate
+		
+		IntStream.iterate(1, x -> x + 1)
+				 .forEach(System.out::println);
+		
+		IntStream yöntemi yineleme, ilk bağımsız değişkenindeki çekirdek değerden (1) başlayarak sıralı bir değer dizisi oluşturur.
+		Sonraki her öğe, yinelemenin ikinci bağımsız değişkeni olarak belirtilen IntUnaryOperator dizisindeki önceki değere uygulanarak üretilir.
+		Önceki işlem hattı 1, 2, 3, 4, 5, ...'nin sonsuz dizisini oluşturur, ancak bu işlem hattının bir sorunu vardır. 
+		Kaç tane eleman üreteceğimizi belirtmedik, bu yüzden bu sonsuz bir döngünün eşdeğeridir.
+		
+		
+		Limiting an Infinite Stream’s Number of Elements
+		limit() sayesinde biz bu sonsuza kadar sürecek olan akışı kaç eleman istediğimiz ile sınırlandırabiliriz.
+	
+		IntStream.iterate(1, x -> x + 1)
+				 .limit(10)
+				 .forEach(System.out::println);
+		
+		
+		sonsuz bir akışla başlar, ancak üretilen toplam öğe sayısını 10 ile sınırlar, böylece sayıları 1'den 10'a kadar görüntüler.
+		
+		
+		IntStream.iterate(1, x -> x + 1)
+				 .map(x -> x * x)
+				 .limit(10)
+				 .sum()
+		
+		sonsuz bir akışla başlar, ancak yalnızca 1'den 10'a kadar tamsayıların karelerini toplar.
+		
+		not:Sonsuz akışlar üreten yöntemler kullanan akış işlem hatlarının, üretilecek öğe sayısını sınırladığından emin olun.
+		
+		
+		
+					IntStream Method generate
+		
+		Ayrıca, bağımsız değişken almayan ve int döndüren bir yöntemi temsil eden bir IntSupplier alan generate yöntemini kullanarak sıralanmamış sonsuz akışlar da oluşturabilirsiniz.
+		Örneğin, rasgele adlı bir SecureRandom nesneniz varsa, aşağıdaki akış işlem hattı 10 rasgele tamsayı oluşturur ve görüntüler:
+		
+		IntStream.generate(() -> random.nextInt())
+				 .limit(10)
+				 .forEach(System.out::println);
+				 
+		SecureRandom.ints()
+				    .limit(10)
+				    .forEach(System.out::println);
+				 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 					Lambda Event Handlers
+
+ 					
+ 	Bölüm 12.5.5'te, anonim bir iç sınıf kullanarak bir ero işleyicisinin nasıl uygulanacağını öğrendiniz. 
+ 	ChangeListener gibi soyut bir yönteme sahip işlevsel arabirimlerdir. Bu tür arabirimler için, lambdas ile ero işleyici uygulayabilirsiniz.			
+ 	
+ 		tipPercentageSlider.valueProperty().addListener(new ChangeListener<Number>()
+ 		{
+ 			@Override
+ 			public void changed(ObservableValue<? extends Number> ov, 
+ 				Number oldValue, Number newValue) {
+ 				tipPercentage = BigDecimal.valueOf(newValue.intValue() / 100);
+ 			tipPercentageLabel.setText(percent.format(tipPercentage));
+ 		    }
+ 		  }
+ 	    )
+ 	
+ 	Lambda kullanarak bu anonim sınıfı şu şekilde yazıyoruz: 
+ 	
+ 	tipPercentageSlider.valueProperty().addListener(
+ 	(ov, oldValue, newValue) -> 
+ 	{
+ 		tipPercentage = BigDecimal.valueOf(newValue.intValue() / 100);
+ 		tipPercentageLabel.setText(percent.format(tipPercentage));
+	}
+	)
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 			Additional Notes on Java SE8 Interfaces
+ 			
+ 	Java SE 8 Interfaces Allow Inheritance of Method Implementations
+ 	
+ 	Fonksiyonel arayüzler yalnızca bir soyut yöntem içermelidir, ancak arayüz bildirimlerinde tam olarak uygulanan default yöntemler ve statik yöntemler içerebilir.
+	Örneğin, fonksiyonel programlamada yaygın olarak kullanılan İşlev arayüzünde apply (soyut), compose (varsayılan) ve Then (varsayılan) ve identity (statik) yöntemleri vardır.
+	Bir sınıf varsayılan yöntemlerle bir arabirim uyguladığında ve bunları geçersiz kılmadığında, sınıf varsayılan yöntemlerin uygulamalarını devralır.
+	Bir arabirimin tasarımcısı artık arabirimi uygulayan varolan kodu bozmadan yeni varsayılan ve statik yöntemler ekleyerek arabirimi geliştirebilir. 
+	
+	For example, interface Comparator
+	artık birçok varsayılan ve statik yöntem içeriyor, ancak bu arabirimi uygulayan eski sınıflar Java SE 8'de derlemeye ve düzgün çalışmaya devam edecek.
+	Bir sınıfın birçok arabirim uygulayabileceğini hatırlayın.
+	
+	Bir sınıf, aynı imzaya sahip varsayılan bir yöntem sağlayan iki veya daha fazla ilişkisiz arabirim uygularsa, uygulayan sınıfın bu yöntemi geçersiz kılması gerekir; aksi takdirde, bir derleme hatası oluşur.
+	
+	
+	
+			Java SE 8: @FunctionalInterface Annotation
+	
+	Her birinin yalnızca bir soyut yöntem ve sıfır veya daha fazla varsayılan ve statik yöntem içerdiğinden emin olarak kendi işlevsel arayüzlerinizi oluşturabilirsiniz.
+	istenmese de, bir arayüzün önünde bir arayüzün işlevsel bir arayüz olduğunu beyan edebilirsiniz. @FunctionalInterface
+	Derleyici daha sonra arabirimin yalnızca bir soyut yöntem içerdiğinden emin olacaktır; aksi takdirde, bir derleme hatası oluşturur.
+	
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+/*
+ 				Summary
+
+ 		-Section 17.1 Introduction-
+ 
+ 	*Java SE 8, lambda'lar ekledi ve işlevsel programlamanın temel teknolojilerini Stream aldı.
+ 	*Lambda'lar ve Streamler, belirli program türlerini önceki tekniklere göre daha hızlı, daha basit, daha özlü ve daha az hatayla yazmanızı sağlar.
+ 	
+ 		
+ 		-Section 17.2 Streams and Reduction-	
+ 	
+ 	*counter-controlled yinelemede, genellikle neyi başarmak istediğinizi belirler, ardından bir for döngüsü kullanarak tam olarak nasıl gerçekleştirileceğini belirtirsiniz.
+
+		
+		- 17.2.1 Summing the Integers from 1 through 10 with a for Loop-
+	
+	*Dış yineleme ile tüm yineleme ayrıntılarını belirtirsiniz.
+	
+		-Section 17.2.2 External Iteration with for Is Error Prone-
+		
+	* Dış yineleme, her döngü yinelemesi sırasında değişkenleri mutasyona uğratır.
+	* Bir değişkeni değiştiren kodu  yazdığınızda, bir hata almak mümkündür.
+	
+	
+		-Section 17.2.3 Summing with a Stream and Reduction-,
+	
+	*Class IntStream (java.util.stream paketi), karşı denetimli yinelemeden kaçınmanızı sağlayan yöntemleri uygun bir şekilde tanımlar.
+	* Akış, üzerinde görevler gerçekleştirdiğiniz bir öğeler dizisidir.
+	* Akış işlem hattı, akışın öğelerini bir dizi görev (veya işleme adımı) boyunca taşır.
+	* Akış işlem hattı genellikle veri kaynağı olarak bilinen akışı oluşturan bir yöntem çağrısıyla başlar.
+	* IntStream statik yöntem rangeClosed, kapalı bir değer aralığını, yani yöntemin bağımsız değişkenlerinin her ikisini de içeren bir öğe aralığını içeren bir IntStream oluşturur. 
+	* IntStream range yöntemi, ilk bağımsız değişkeninden ikinci bağımsız değişkenine kadar yarı açık bir değer aralığı üretir, ancak bu değer aralığını içermez.
+	* IntStream'in sum  yöntemi, akıştaki tüm int'lerin toplamını döndürür. 
+	* Yöntem sum(), değer akışını tek bir değere indirir.
+	* Terminal işlemi, bir akış işlem hattının işlenmesini başlatır ve bir sonuç üretir.
+	* IntStream yöntemi sum(), akışın öğelerinin toplamını üreten bir terminal işlemidir.
+	
+	
+		-Section 17.2.4 Internal Iteration-
+	
+	* Dahili olarak, IntStream zaten herhangi bir değiştirilebilir değişkeni bildirmek ve kullanmak zorunda kalmadan öğeleri arasında nasıl yineleme yapılacağını biliyor. 
+	* Bu, iç yineleme olarak bilinir, çünkü IntStream, tüm yineleme ayrıntılarını işlevsel programlamanın önemli bir yönü olarak işler.
+	* Buna alıştıktan sonra, akış işlem hattı kodunun okunması da daha kolay olabilir.
+	
+	
+		-Section 17.3 Mapping and Lambdas-
+	
+	* Çoğu akış işlem hattı, terminal işlemi bir sonuç üretmeden önce akışın öğeleri üzerinde gerçekleştirilecek görevleri belirten ara işlemler içerir.
+	* Map ara işlemi, akışın öğelerini yeni değerlere dönüştürür. 
+	* Sonuç, dönüşümün sonuçlarını içeren aynı sayıda öğeye sahip bir akıştır. Bazen Maplenen öğeler, orijinal akışın öğelerinden farklı türlerdedir.
+	* IntStream map yöntemi, bağımsız değişkeni olarak, sonuç döndüren tek bir parametreye sahip bir yöntemi temsil eden bir nesne alır.
+	* Akıştaki her öğe için map, bağımsız değişken olarak aldığı yöntemi çağırır ve yönteme geçerli akış öğesini iletir. Yöntemin dönüş değeri, eşlemenin döndürdüğü yeni akışın bir parçası haline gelir. 
+	
+	
+		-Section 17.3.1 Lambda Expressions-
+	
+	* Birçok ara ve terminal akış işlemi, yöntemleri bağımsız değişken olarak alır ve genellikle lambda ifadeleri olarak uygulanır.
+	* Lambda ifadesi anonim bir yöntemi, yani adı olmayan bir yöntemi temsil eder.
+	* Lambda ifadeleri (veya kısaca lambdalar), veri olarak işlenebilecek yöntemler oluşturmanızı sağlar. 
+	* Lambda ifadelerini diğer yöntemlere bağımsız değişken olarak geçirebilir, lambda ifadelerini daha sonra kullanmak üzere değişkenlere atayabilir ve yöntemlerden lambda ifadeleri döndürebilirsiniz.
+	
+	
+		-Section 17.3.2 Lambda Syntax-
+	
+	*  Bir lambda, bir parametre listesinin ardından ok belirteci (->) ve aşağıdaki gibi bir gövdeden oluşur:
+	*  (parameterList) -> {statements}
+	*  Gövde, kıvırcık parantezlerle çevrili bir veya daha fazla ifade içerebilen bir ifade bloğudur.
+	*  Derleyici, lambda'nın bağlamından dönüş türünü çıkarır. 
+	*  Bir yöntem bildiriminde olduğu gibi, lambdalar virgülle ayrılmış bir listede birden çok parametre belirtir.
+	*  Bir lambda'nın parametre türleri genellikle atlanabilir, bu durumda derleyici parametreyi lambda'nın bağlamına göre çıkarır ve türleri döndürür.
+	*  Gövde yalnızca bir ifade içeriyorsa, return anahtar sözcüğü, kıvırcık ayraçlar ve noktalı virgül gövdeden çıkarılabilir. Bu durumda, lambda dolaylı olarak ifadenin değerini döndürür.
+	*  Parametre listesi yalnızca bir parametre içeriyorsa, parantezler atlanabilir.
+	*  Lambda'yı boş parametre listesiyle tanımlamak için, ok belirtecinin solunda boş parantezler kullanın (->).
+	
+	
+		-Section 17.3.3 Intermediate and Terminal Operations-
+	
+	* Ara işlemler lazydir, her ara işlem yeni bir akış nesnesiyle sonuçlanır, ancak bir sonuç üretmek için bir terminal işlemi çağrılana kadar akışın öğeleri üzerinde herhangi bir işlem gerçekleştirmez.
+	* Bu,  geliştiricilerinin akış işleme performansını en iyi duruma getirmesine olanak tanır.
+	* Terminal operasyonları, çağrıldıklarında istenen işlemi gerçekleştirirler. 
+	* 
+	* 
+	 	
+	 	
+	 	-Filtering-
+	
+	* Diğer bir yaygın ara akış işlemi, Predicate olarak bilinen bir koşulla eşleşenleri seçmek için öğeleri filtrelemektir.
+	* Filter() bağımsız değişkeni olarak bir parametre alan ve Boolean sonucunu döndüren bir yöntem alır. Sonuç belirli bir öğe için doğruysa, bu öğe ortaya çıkan akışa dahil edilir.
+	* Bir terminal işlemi gerçekleştirildiğinde, ara işlemler tarafından belirtilen birleşik işleme adımları her elemana uygulanır.
+	 	
+
+
+
+
+		-Section 17.5 How Elements Move Through Stream Pipelines-
+	
+	* Her yeni akış, işlem hattında o noktaya kadar belirtilen tüm işleme adımlarını temsil eden bir nesnedir.
+	* Zincirleme ara işlemler, her akış öğesinde gerçekleştirilecek işleme adımları kümesine eklenir.
+	* Akış ardışık düzenindeki son akış nesnesi, her akış öğesinde gerçekleştirilecek tüm işleme adımlarını içerir.
+	* Terminal işlemiyle bir akış işlem hattı başlattığınızda, işlem hattının ara işlemleri tarafından belirtilen tüm işleme adımları, bir sonraki akış öğesine uygulanmadan önce belirli bir akış öğesi için uygulanır. 
+	
+	
+	
+		-Section 17.6 Method References-
+	
+	* Bir lambda'nın kullanılabileceği her yerde, derleyicinin her yöntem başvurusunu uygun bir lambda ifadesine dönüştürdüğü bir yöntem başvurusu aracılığıyla varolan bir yöntemin adını kullanabilirsiniz. 
+	* Bir lambda yalnızca karşılık gelen yöntemi çağırdığında yöntem başvurularını kullanırsınız.
+	
+	
+	
+		-Section 17.6.1 Creating an IntStream of Random Values-
+	
+	* Class SecureRandom'ın ints yöntemi, rasgele sayılardan oluşan bir IntStream döndürür.
+	
+	 
+	 	-Section 17.6.2 Performing a Task on Each Stream Element with forEach and a Method Reference-
+	
+	* IntStream yöntemi forEach (bir terminal işlemi) her akış öğesinde bir görev gerçekleştirir.
+	* Method forEach bağımsız değişkeni olarak bir parametre alan ve parametrenin değerini kullanarak bir görev gerçekleştiren bir yöntem alır.
+	* Yöntem başvurusu, belirtilen yöntemi çağıran bir lambda için kısayol gösterimidir.
+	
+	
+	
+		-Section 17.6.3 Mapping Integers to String Objects with mapToObj-
+	
+	* IntStream method map returns another IntStream. 
+	* 
+
+*/
