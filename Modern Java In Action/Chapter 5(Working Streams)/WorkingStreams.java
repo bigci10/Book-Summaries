@@ -526,6 +526,392 @@ anyMatch yöntemi bir boolean döndürür ve bu nedenle bir terminal işlemidir.
 -----------------------------------------------------------------------------------------*/
 
 
+/*-----------------------------------------------------------------------------------------
+ 			Numeric streams
+
+ 	Daha önce bir akışın öğelerinin toplamını hesaplamak için reduce yöntemini kullanabileceğinizi görmüşsünüzdür. 
+ 	Örneğin, menüdeki kalori sayısını aşağıdaki gibi hesaplayabilirsiniz:
+ 	
+ 		int calories = menu.stream()
+ 						   .map(Dish::getCalories)
+ 						   .reduce(0, Integer::sum);
+ 	
+
+	Bu kodla ilgili sorun, sinsi bir box maliyetinin olmasıdır. 
+	Perde arkasında, her Tamsayı'nın toplama işlemini gerçekleştirmeden önce bir ilkelin kutusunun açılması gerekir. 
+	Ek olarak, bir sum yöntemini doğrudan aşağıdaki gibi çağırabilseydiniz daha güzel olmaz mıydı? 
+
+		int calories = menu.stream()
+						   .map(Dish::getCalories)
+						   .sum();
+						   
+	Ancak bu mümkün değil. 
+	Sorun, map metodunun bir akış oluşturmasıdır Stream<T>. 
+	Akışın öğeleri Tamsayı türünde olsa da, akışlar arabirimi bir toplam yöntemi tanımlamaz. 
+	
+	Neden olmasın? Diyelim ki Stream<Dish> akışınız var menü gibi ; bulaşıkları toplayabilmek mantıklı olmazdı.
+	Ama endişelenmeyin; Akışlar API'si, sayı akışlarıyla çalışmak için özel yöntemleri destekleyen ilkel akış uzmanlıkları da sağlar.
+	
+-----------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 		Primitive Stream Specializations
+ 	
+ 	Java 8, bu sorunu çözmek için üç ilkel özel akış arabirimi sunar: 
+ 	IntStream, DoubleStream ve LongStream, sırasıyla bir akışın öğelerini int, long ve double olacak şekilde uzmanlaştırır ve böylece gizli box maliyetlerinden kaçınır.
+ 	Bu arabirimlerin her biri, sayısal akışın toplamını hesaplamak için sum() ve maksimum öğeyi bulmak için max() gibi yaygın sayısal azaltmaları gerçekleştirmek için yeni yöntemler getirir. 
+ 	Hatırlanması gereken şey, bu uzmanlıkların ek karmaşıklığının akışlara özgü olmadığıdır. boxun karmaşıklığını, int ve Integer arasındaki (verimliliğe dayalı) farkı vb. Yansıtır. 
+ 	
+ 	
+-----------------------------------------------------------------------------------------*/
+
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 			MAPPING TO A NUMERIC STREAM
+ 	
+ 	Bir akışı özel bir sürüme dönüştürmek için kullanacağınız en yaygın yöntemler mapToInt, mapToDouble ve mapToLong'dur.
+ 	Bu yöntemler tam olarak daha önce gördüğünüz map yöntemi gibi çalışır, ancak Stream<T> yerine özel bir akış döndürür.
+ 	Örneğin, menüdeki kalorilerin toplamını hesaplamak için mapToInt'i aşağıdaki gibi kullanabilirsiniz:
+ 	
+ 	int calories = menu.stream()
+ 					   .mapToInt(Dish::getCalories)
+ 					   .sum();
+ 	
+ 	Burada, mapToInt yöntemi her bir nesneden tüm kalorileri çıkarır ve sonuç olarak bir "IntStream" döndürür (bir Stream<Integer> yerine).
+ 	Daha sonra kalori toplamını hesaplamak için IntStream arayüzünde tanımlanan sum yöntemini çağırabilirsiniz!
+ 	Akış boşsa toplamın varsayılan olarak 0 döndüreceğini unutmayın. IntStream ayrıca max, min ve average gibi diğer kolaylık yöntemlerini de destekler.
+ 	
+ -----------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 		    CONVERTING BACK TO A STREAM OF OBJECTS
+ 		    
+ 	 Benzer şekilde, sayısal bir akışınız olduğunda, bunu özel olmayan bir akışa geri dönüştürmekle ilgilenebilirsiniz.
+ 	 Örneğin, bir IntStream'in işlemleri ilkel tamsayılar üretmek için sınırlandırılmıştır: Bir IntStream'in map işlemi, int alan ve int (IntUnaryOperator) üreten bir lambda alır.
+ 	 
+ 	 Ancak Dish gibi farklı bir değer üretmek isteyebilirsiniz.
+ 	 Bunun için daha genel olan akış arayüzünde tanımlanan operasyonlara erişmeniz gerekir.
+ 	 İlkel bir akıştan genel bir akışa dönüştürmek için (her int bir Tamsayıya kutulanır) aşağıdaki gibi kutulu yöntemi kullanabilirsiniz:
+	 
+	 IntStream intStream = menu.stream()  
+	 						   .mapToInt(Dish::getCalories); Converts a Stream to a numeric stream
+	 
+	 Stream<Integer> stream = intStream.boxed; Converts the numeric stream to a stream;
+	 Bir sonraki bölümde, genel bir akışa kutulanması gereken sayısal aralıklarla uğraşırken kutulu seçeneğin özellikle yararlı olduğunu öğreneceksiniz.
+	
+ 
+ -----------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 			DEFAULT VALUES: OPTIONALINT
+ 			
+ 	Toplamlık örneği, varsayılan bir değere sahip olduğu için kullanışlıydı: 0. 
+ 	Ancak bir IntStream'deki maksimum öğeyi hesaplamak istiyorsanız, 0 yanlış bir sonuç olduğundan farklı bir şeye ihtiyacınız olacaktır.
+	Akışın hiçbir öğesi olmadığını ve gerçek maksimumun 0 olduğunu nasıl ayırt edebilirsiniz?
+	Daha önce, bir değerin varlığını veya yokluğunu gösteren bir konteyner olan Optional sınıfı tanıttık. Optional, Integer, String vb.
+
+	Üç ilkel akış uzmanlığı için de Optionalın ilkel bir özelleştirilmiş sürümü vardır: OptionalInt, OptionalDouble ve OptionalLong. 
+	Örneğin, bir IntStream'in maksimum öğesini, OptionalInt döndüren max yöntemini çağırarak bulabilirsiniz:
+	
+	OptionalInt maxCalories = menu.stream()
+								  .mapToInt(Dish::getCalories)
+								  .max();
+	
+	Artık maksimum değer yoksa varsayılan bir değer tanımlamak için OptionalInt'i açıkça işleyebilirsiniz:
+	
+	int max = maxCalories.orElse(1);
+								  
+-----------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 				Numeric Ranges
+ 
+ 	Sayılarla uğraşırken ortak bir kullanım durumu, sayısal değer aralıklarıyla çalışmaktır.
+ 	Örneğin, 1 ile 100 arasındaki tüm sayıları oluşturmak istediğinizi varsayalım. 
+ 	Java 8, bu tür aralıkların oluşturulmasına yardımcı olmak için IntStream ve LongStream'de bulunan iki statik yöntem sunar: range ve rangeClosed. 
+ 	Her iki yöntem de aralığın başlangıç değerini ilk parametre ve aralığın bitiş değerini ikinci parametre olarak alır. 
+ 	Ancak aralık özeldir, oysa rangeClosed kapsayıcıdır. Bir örneğe bakalım.
+ 	
+ 	IntStream evenNumbers = IntStream.rangeClosed(1,100)
+ 									 .filter(n -> n % 2 == 0);
+ 	
+ 	System.out.println(evenNumbers.count());
+ 	
+ 	
+ 	Burada, 1 ile 100 arasındaki tüm sayıların bir aralığını oluşturmak için rangeClosed yöntemini kullanırsınız.
+ 	Bir akış üretir, böylece filtre yöntemini yalnızca çift sayıları seçecek şekilde zincirleyebilirsiniz.
+ 	Bu aşamada hiçbir hesaplama yapılmamıştır. Son olarak, ortaya çıkan akışta sayım çağrısı yaparsınız.
+ 	Count bir terminal işlemi olduğundan, akışı işler ve 1'den 100'e kadar olan çift sayıların sayısı olan 50 sonucunu döndürür.
+ 	Karşılaştırma yaparak, bunun yerine IntStream.range(1, 100) kullanıyor olsaydınız,  range is exclusive. olduğu için sonucun 49 çift sayı olacağını unutmayın.
+ 	
+ 	
+-----------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 			 Building streams
+
+	Umarım, şimdiye kadar akışların veri işleme sorgularını ifade etmek için güçlü ve kullanışlı olduğuna ikna olmuşsunuzdur. 
+	Akış yöntemini kullanarak bir koleksiyondan akış alabildiniz. 
+	Ek olarak, size bir dizi sayıdan sayısal akışların nasıl oluşturulacağını gösterdik. 
+	Ancak akışları daha birçok şekilde oluşturabilirsiniz! 
+	Bu bölümde, sonsuz akışlar oluşturmak için bir dizi değerden, bir diziden, bir dosyadan ve hatta üretici bir işlevden nasıl akış oluşturabileceğiniz gösterilmektedir!
+	
+	
+-----------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------
+  			Streams from values
+	
+	Herhangi bir sayıda parametre alabilen Stream.of statik yöntemini kullanarak açık değerlere sahip bir akış oluşturabilirsiniz.
+	Örneğin, aşağıdaki kodda doğrudan Stream.of kullanarak bir dize akışı oluşturursunuz. 
+	Daha sonra dizeleri tek tek yazdırmadan önce büyük harfe dönüştürürsünüz:		 
+		
+		Stream<String> stream = Stream.of("Modern","Java","In","Action");
+		stream.map(String::tuUpperCase).forEach(System.out::println);
+		
+		empty metodunu kullanarak boş bir stream elde edelirsiniz
+		Stream<String> emptyStream = Stream.empty();
+		
+-----------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------
+			 Stream from nullable
+	
+	
+	Java 9'da, nullable bir nesneden akış oluşturmanıza olanak tanıyan yeni bir yöntem eklenmiştir.
+	Akışlarla oynadıktan sonra, null olabilecek ve ardından bir akışa (veya null için boş bir akışa) dönüştürülmesi gereken bir nesneyi ayıkladığınız bir durumla karşılaşmış olabilirsiniz.
+	
+		
+	Örneğin, System.getProperty yöntemi, verilen anahtarda bir özellik yoksa null değerini döndürür.
+	Bir akışla birlikte kullanmak için null değerini aşağıdaki gibi açıkça denetlemeniz gerekir:
+	
+		String homeValue = System.getProperty("home");
+		Stream<String> homeValueStream = homeValue == null ? Stream.empty() : Stream.of(value);
+	
+	Using Stream.ofNullable you can rewrite this code more simply:
+		Stream<String> homeValueStream = Stream.ofNullable(System.getProperty("home"));
+	
+	Bu desen, flatMap ve nullable nesneler içerebilecek bir değer akışı ile birlikte özellikle kullanışlı olabilir:
+		Stream<String> values = Stream.of("config","home","user")
+								.flatMap(key -> Stream.ofNullable(System.getProperty(key)));
+	
+	
+-----------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------
+			Stream from arrays
+	
+	Bir diziyi parametre olarak alan Arrays.stream statik yöntemini kullanarak bir diziden akış oluşturabilirsiniz. 
+	Örneğin, bir dizi ilkel int'yi IntStream'e dönüştürebilir ve ardından aşağıdaki gibi bir int üretmek için IntStream'i toplayabilirsiniz:
+	
+		int[] numbers = {2,3,5,7,11,13};
+		int sum = Arrays.stream(numbers).sum();
+		
+	
+	
+-----------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------
+			Streams from files 
+	
+	Bir dosyayı işleme gibi G\/Ç işlemleri için kullanılan Java'nın NIO API'si (engellemeyen G\/Ç), Akışlar API'sinden yararlanacak şekilde güncelleştirilmiştir.
+	java.nio.file.Files dosyasındaki birçok statik yöntem bir akış döndürür.
+	Örneğin, yararlı bir yöntem, belirli bir dosyadan dize olarak bir satır akışı döndüren Files.lines'tır.
+	Şimdiye kadar öğrendiklerinizi kullanarak, bir dosyadaki benzersiz sözcük sayısını aşağıdaki gibi bulmak için bu yöntemi kullanabilirsiniz:
+	
+	long uniqueWords = 0;
+	try
+	{
+		Stream<String> lines = Files.lines(Paths.get("data.txt"),Charset.defaultCharset()))
+							   {
+							   	 uniqueWords = lines.flatMap(line -> Arrays.stream(line.split(" ")))
+							   	 					.distinct()
+							   	 					.count();
+							   }
+	catch(IOException e)
+	{
+	}
+	
+	
+	Her öğenin verilen dosyadaki bir satır olduğu bir akışı döndürmek için Files.lines kullanın.
+	Bu çağrı, akışın kaynağı bir I\O kaynağı olduğundan bir deneme\/yakalama bloğuyla çevrilidir.
+	Aslında, Files.lines çağrısı, sızıntıyı önlemek için kapatılması gereken bir G\/Ç kaynağı açacaktır.
+	Geçmişte, bunu yapmak için açık bir finally ile engellemeye ihtiyacınız olurdu.
+	Akış arabirimi kullanışlı bir şekilde AutoCloseable arabirimini uygular.
+	Bu, kaynağın yönetiminin deneme bloğu içinde sizin için işlendiği anlamına gelir.
+	Bir satır akışınız olduğunda, split yöntemini çağırarak her satırı kelimelere bölebilirsiniz.
+
+-----------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------
+
+			Streams from functions: creating infinite streams!
+			
+	Akışlar API'si, bir işlevden akış oluşturmak için iki statik yöntem sağlar: Stream.iterate ve Stream.generate.
+	Bu iki işlem, sonsuz akış dediğimiz, sabit bir koleksiyondan akış oluşturduğunuzda olduğu gibi sabit bir boyuta sahip olmayan bir akış oluşturmanıza olanak tanır. 
+	'İterate' ve 'generate' tarafından üretilen akışlar, bir işlev verilen talep üzerine değerler oluşturur ve bu nedenle değerleri sonsuza dek hesaplayabilir!
+	Sonsuz sayıda değer yazdırmaktan kaçınmak için bu tür akışlarda limit(n) kullanmak genellikle mantıklıdır.
+	
+	Iterate i açıklamadan önce yinelemenin nasıl kullanılacağına dair basit bir örneğe bakalım:
+	Stream.iterate(0,n -> n + 2)
+		  .limit(10)
+		  .forEach(System.out::println);
+	
+	Iterator yöntemi, <T>üretilen her yeni değere art arda uygulanmak üzere bir başlangıç değeri, burada 0 ve bir lambda (UnaryOperator türünde) alır.
+	Burada, lambda n -> n 2'yi kullanarak 2 ile eklenen önceki öğeyi döndürürsünüz. Sonuç olarak, yineleme yöntemi tüm çift sayıların bir akışını üretir: akışın ilk öğesi başlangıç değeri 0'dır.
+	Daha sonra yeni değer 2'yi üretmek için 2 ekler; yeni değer üretmek için tekrar 2 ekler 4 vb. Bu yineleme işlemi temelde sıralıdır, çünkü sonuç önceki uygulamaya bağlıdır.
+	Bu işlemin sonsuz bir akış ürettiğini, değerlerin isteğe bağlı olarak hesaplandığını ve sonsuza dek hesaplanabileceğini unutmayın. Akışın unbounded olduğunu söylüyoruz.
+	Daha önce de tartıştığımız gibi, bu bir akış ile koleksiyon arasındaki önemli bir farktır. 
+	Akışın boyutunu açıkça sınırlamak için limit yöntemini kullanıyorsunuz.
+	Burada sadece ilk 10 çift sayıyı seçersiniz. Daha sonra akışı kullanmak ve her öğeyi ayrı ayrı yazdırmak için forEach terminal işlemini çağırırsınız.
+	
+	Genel olarak, bir dizi ardışık değer (örneğin, bir tarihin ardından bir sonraki tarihi: 31 Ocak, 1 Şubat vb.) oluşturmanız gerektiğinde iterator kullanmanız gerekir.
+	
+	
+	Java 9'da yineleme yöntemi bir predicate desteği ile geliştirildi. 
+	Sınav için, 0'dan başlayarak numaralar oluşturabilirsiniz, ancak sayı 100'den büyük olduğunda yinelemeyi durdurabilirsiniz:
+	
+	IntStream.iterate(0,n -> n < 100, n -> n + 4)
+			 .forEach(System.out::println);
+	
+	Yineleme yöntemi, ikinci bağımsız değişkeni olarak, yinelemeye ne zamana kadar devam edeceğinizi söyleyen bir predicate alır.
+	Aynı sonucu elde etmek için filtre operasyonunu kullanabileceğinizi düşünebilirsiniz:
+	
+	IntStream.iterate(0,n -> n+4)
+			 .filter( n -> n < 100)
+			 .forEach(System.out::println);
+	
+	Ne yazık ki durum böyle değil. Aslında, bu kod sona ermezdi! 
+	Bunun nedeni, filtrede sayıların artmaya devam ettiğini bilmenin bir yolu olmamasıdır, bu yüzden onları sonsuz bir şekilde filtrelemeye devam eder! 
+	Sorunu, akışı kısa devre yapacak olan takeWhile'ı kullanarak çözebilirsiniz:
+	
+	IntStream.iterate(0, n -> n + 4)
+			 .takeWhile(n -> n < 100)
+			 .forEach(System.out::println);
+	
+	Ancak, bir predicate ile yinelemenin biraz daha özlü olduğunu kabul etmelisiniz!
+	
+-----------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------
+ 
+				GENERATE
+				
+	Yineleme yöntemine benzer şekilde, generate yöntem, isteğe bağlı olarak hesaplanan sonsuz bir değer akışı üretmenizi sağlar.
+	Ancak generate, üretilen her yeni değere art arda bir işlev uygulamaz. 
+	Yeni değerler sağlamak için Supplier tipi bir lambda<T> gerekir. 
+	Nasıl kullanılacağına dair bir örneğe bakalım:
+	
+	Stream.generate(Math::random)
+	      .limit(5)
+	      .forEach(System.out::println);
+	
+	bu kod 0 ile 1 arasında 5 adet double değer üretecektir. 
+	
+	Math.random statik yöntemi, yeni değerler için bir generator olarak kullanılır. 
+	Yine limit yöntemini kullanarak akışın boyutunu açıkça sınırlarsınız; aksi takdirde akış sınırsız olurdu!
+	Generate yöntemini kullanarak yapabileceğiniz başka yararlı bir şey olup olmadığını merak ediyor olabilirsiniz. 
+	Kullandığımız Supplier (Math.random'a bir yöntem referansı) durum bilgisizdi: daha sonraki hesaplamalarda kullanılabilecek herhangi bir yere herhangi bir değer kaydetmiyordu. 
+	Akışın bir sonraki değerini oluştururken değiştirebileceği ve kullanabileceği durumu depolayan bir Supplier oluşturabilirsiniz.
+	
+	Fibonacci serisini quiz 5.4'ten generate kullanarak nasıl oluşturabileceğinizi göstereceğiz, böylece yineleme yöntemini kullanan yaklaşımla karşılaştırabilirsiniz!
+	Ancak, durum bilgisi olan bir Supplier paralel kodda kullanılmasının güvenli olmadığını belirtmek önemlidir. 
+	Fibonacci için durum bilgisi olan IntSupplier bu bölümün sonunda eksiksizlik için gösterilmiştir, ancak genellikle kaçınılmalıdır!
+	
+	Örneğimizde, kutulama işlemlerinden kaçınmak üzere tasarlanmış kodu göstermek için bir IntStream kullanacağız.
+	
+	
+	IntStream üzerinde oluşturma yöntemi Supplier<T> yerine bir IntSupplier alır. 
+	Örneğin, sonsuz bir akış oluşturmanın yolu şudur:
+	
+	IntStream ones = IntStream.generate(() -> 1);
+	
+	Bölüm 3'te, Lambdas'ın yöntemin doğrudan satır içi uygulamasını sağlayarak fonksiyonel bir yüzün bir örneğini oluşturmanıza izin verdiğini gördünüz.
+	Ayrıca, IntSupplier arayüzünde tanımlanan getAsInt yöntemini uygulayarak aşağıdaki gibi açık bir nesneyi iletebilirsiniz:
+	
+	IntStream twos = IntStream.generate(new IntSupplier()
+					{
+						public int getAsInt() {
+							return 2;
+						}
+					};
+	
+	Generate yöntemi, verilen Supplier ı kullanır ve her zaman 2 döndüren getAsInt yöntemini tekrar tekrar çağırır.
+	Ancak burada kullanılan anonim sınıf ile lambda arasındaki fark, anonim sınıfın getAsInt yönteminin değiştirebileceği alanlar aracılığıyla durumu tanımlayabilmesidir.
+	Bu bir yan etki örneğidir. Şimdiye kadar gördüğünüz tüm lambdalar yan etkisi yoktu; hiçbir durumu değiştirmediler.
+	
+	Fibonacci görevlerimize geri dönmek için şimdi yapmanız gereken şey, serideki önceki değeri durumunda tutan bir IntSupplier oluşturmaktır, böylece getAsInt bir sonraki öğeyi hesaplamak için kullanabilir.
+	Ayrıca, bir dahaki sefere çağrıldığında IntSupplier durumunu güncelleyebilir. 
+	Aşağıdaki kod, çağrıldığında bir sonraki Fibonacci öğesini döndürecek bir IntSupplier öğesinin nasıl oluşturulacağını gösterir:
+	
+	IntSupplier fib = new IntSupplier(){
+		private int previous = 0;
+		private int current = 1;
+		public int getAsInt()
+		{
+			int oldPrevious = this.previous;
+			int nextValue = this.previous + this.current;
+			this.previous = this.current;
+			this.current = nextValue;
+			return oldPrevious;
+		}
+	};
+	
+	IntStream.generate(fib).limit(10).forEach(System.out::println);
+	
+	Kod, IntSupplier'ın bir örneğini oluşturur. 
+	Bu nesnenin değiştirilebilir bir durumu vardır: önceki Fibonacci öğesini ve geçerli Fibonacci öğesini iki örnek değişkeninde izler.
+	getAsInt yöntemi, çağrıldığında nesnenin durumunu değiştirir, böylece her çağrıda yeni değerler üretir.
+	Buna karşılık, yineleme kullanan yaklaşımımız tamamen değişmezdi; mevcut durumu değiştirmediniz, ancak her yinelemede yeni demetler oluşturuyordunuz.
+	
+	Sonsuz boyutlu bir akışla uğraştığınız için, limit() kullanarak boyutunu açıkça sınırlamanız gerektiğini unutmayın; aksi takdirde, terminal işlemi (bu durumda forEach) sonsuza dek hesaplanır
+	Benzer şekilde, sonsuz bir akışı sıralayamaz veya azaltamazsınız, çünkü tüm öğelerin işlenmesi gerekir, ancak akış sonsuz sayıda öğe içerdiğinden bu sonsuza dek sürer!
+	
+-----------------------------------------------------------------------------------------*/
+
+
+
+/*-----------------------------------------------------------------------------------------
+ 				Summaries 
+
+ 				
+ 	-Akışlar API'si, karmaşık veri işleme sorgularını ifade etmenizi sağlar. Ortak akış işlemleri tablo 5.1'de özetlenmiştir.
+ 	-Filtre, distinct, takeWhile (Java 9), dropWhile (Java 9), skip ve limit yöntemlerini kullanarak bir akışı filtreleyebilir ve dilimleyebilirsiniz.
+ 	-takeWhile ve dropWhile yöntemleri, kaynağın sıralandığını(sorted) bildiğiniz zaman filtreden daha verimlidir.
+ 	-Map ve flatMap yöntemlerini kullanarak bir akışın öğelerini ayıklayabilir veya dönüştürebilirsiniz.
+ 	-findFirst ve findAny yöntemlerini kullanarak bir akıştaki öğeleri bulabilirsiniz.
+ 		Bir akıştaki belirli bir predicate i allMatch, noneMatch ve anyMatch yöntemlerini kullanarak eşleştirebilirsiniz.
+ 	
+ 	-Bu yöntemler kısa devreden yararlanır: bir hesaplama bir sonuç bulunur bulunmaz durur; tüm akışı işlemeye gerek yoktur.
+ 	
+ 	-Bir akışın tüm öğelerini, reduce yöntemini kullanarak bir sonuç üretmek için, örneğin toplamı hesaplamak veya bir akışın maksimum değerini bulmak için yinelemeli olarak birleştirebilirsiniz.
+ 	
+ 	-Filtre ve Map gibi bazı işlemler durum bilgisi içermez: herhangi bir durum depolamazlar.
+ 		Bir değeri hesaplamak için depo durumunu azaltma gibi bazı işlemler,Sorted ve distinct gibi bazı işlemler de durumu depolar, çünkü yeni bir akışı döndürmeden önce akışın tüm öğelerini arabelleğe almaları gerekir.
+ 		bu tür operasyonlare statefull operations denir.
+ 	
+ 	-Akışların üç ilkel özel durumu  vardır: IntStream, DoubleStream ve LongStream. Operasyonları da buna göre özeldir .	
+ 	
+ 	-Akışlar yalnızca bir koleksiyondan değil, values, arrays, files ve iterator ve generator gibi belirli yöntemlerden de oluşturulabilir.
+ 	
+ 	-Sonsuz bir akışın sonsuz sayıda öğesi vardır (örneğin tüm olası dizeler). 
+ 	Bu mümkündür, çünkü bir akışın elemanları yalnızca talep üzerine üretilir. 
+ 	Limit gibi yöntemleri kullanarak sonsuz bir akıştan sonlu bir akış elde edebilirsiniz.
+ 	
+-----------------------------------------------------------------------------------------*/
 
 
 
