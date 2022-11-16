@@ -1565,6 +1565,171 @@ daha basit, daha özlü ve daha az hatayla yazmak için lambdaları ve akışlar
 		-Section 17.6.3 Mapping Integers to String Objects with mapToObj-
 	
 	* IntStream method map returns another IntStream. 
-	* 
+	* IntStream yöntemi mapToObj, ints'den referans türündeki öğelerin akışına eşlenir.
+	* Statik yöntem başvurusu, derleyicinin belirtilen sınıftaki statik yöntemi çağıran ve geçerli akış öğesini bağımsız değişken olarak ileten tek parametreli bir lambda'ya dönüştürdüğü ClassName::staticMethodName biçimine sahiptir.
+	* Stream terminal işlem Collection, String akış öğelerini birleştirmek için kullanılabilir. Collect yöntemi bir indirgeme biçimidir çünkü bir nesne döndürür.
+	
+		-Section 17.6.4 Concatenating Strings with collect-
+	
+	* Stream terminal işlemi collect, bağımsız değişkeni olarak, akışın öğelerinin tek bir nesnede nasıl toplanacağını belirten bir collector nesnesi alır. 
+	* Collectors statik yöntem birleştirme tarafından döndürülen önceden tanımlanmış collector, akış öğelerinin birleştirilmiş bir String temsilini oluşturur ve her öğeyi birleştirme yönteminin bağımsız değişkeniyle bir sonrakinden ayırır. Yöntem collect daha sonra elde edilen String'i döndürür.
 
+		-Section 17.7 IntStream Operations-
+	
+	* LongStreams ve DoubleStreams, sırasıyla long ve double değerdeki akışları işler.
+	
+		-Section 17.7.1 Creating an IntStream and Displaying Its Values-
+	
+	* IntStream statik yöntemi bir int array bağımsız değişkeni alır ve dizinin değerlerini işlemek için bir IntStream döndürür.
+	* Bir akış işlem hattı bir terminal işlemi ile işlendikten sonra, akış tekrar kullanılamaz, çünkü orijinal veri kaynağının bir kopyasını tutmaz.
+	
+		-Section 17.7.2 Terminal Operations count, min, max, sum and average-
+	
+	* IntStream metodu count, akıştaki öğelerin sayısını döndürür.
+	* IntStream method min, muhtemelen akıştaki en küçük int'yi içeren bir OptionalInt (java.util paketi) döndürür.
+	* Herhangi bir akış için, akışta öğe bulunmaması mümkündür. OptionalInt öğesinin döndürülmesi, akış en az bir öğe içeriyorsa min yönteminin en düşük değeri döndürmesini sağlar. 
+	* OptionalInt'in getAsInt yöntemi, varsa değeri elde eder; aksi takdirde, bir NoSuchElementException atar
+	* IntStream yöntemi max, muhtemelen akıştaki en büyük int'yi içeren bir OptionalInt döndürür.
+	* IntStream yöntem average(), muhtemelen akıştaki int'lerin ortalamasını double türünde bir değer olarak içeren bir OptionalDouble (java.util paketi) döndürür. OptionalDouble'ın getAsDouble yöntemi, varsa değeri elde eder; aksi takdirde, bir NoSuchElementException atar. 
+	* IntStream method summaryStatistics, count, min, max, sum ve average işlemlerini bir IntStream öğesinin tek geçişinde gerçekleştirir ve sonuçları bir IntSummaryStatistics nesnesi (package java.util) olarak döndürür. 
+	
+		-Section 17.7.4 Sorting IntStream Values-
+	
+	* IntStream ara işlem sorted order, akışın öğelerini varsayılan olarak artan düzene sıralar.
+
+		-Section 17.8 Functional Interfaces-
+	
+	* Functional bir arayüz tam olarak bir soyut yöntem içerir. Bu tür arabirimler tek soyut yöntem (SAM) arabirimleri olarak da bilinir.
+	* İşlevsel programcılar, yalnızca parametrelerine bağlı olan saf işlevlerle çalışırlar, yan etkileri yoktur ve herhangi bir durumu korumaz.
+	* Saf işlevler, genellikle lambdas olarak tanımlanan işlevsel arabirimlerin uygulamalarıdır.
+	* java.util.function paketi birkaç işlevsel arayüz içerir.
+	
+	 	
+	 	-Section 17.9 Lambdas: A Deeper Look-
+	
+	* Lambda ifadeleri, işlevsel arabirimlerin beklendiği her yerde kullanılabilir.
+	* Java derleyicisi genellikle lambda'nın parametrelerinin türlerini ve lambda tarafından döndürülen türü, lambda'nın kullanıldığı bağlamdan çıkarabilir. 
+	 	Bu, lambda'nın hedef türü tarafından, lambda'nın kodda göründüğü yerde beklenen işlevsel arabirim türü tarafından belirlenir. 
+	* Yöntemlerin aksine, lambdaların kendi kapsamları yoktur.
+	* Çevreleyen yöntemden (lambda'nın sözcüksel kapsamı olarak bilinir) yerel bir değişkene başvuran bir lambda, yakalayan bir lambda'dır. Derleyici, yerel değişkenin değerini yakalar ve lambda sonunda yürütüldüğünde lambda'nın değeri kullanabilmesini sağlamak için lambda ile birlikte depolar. 
+	* Bir lambda'nın sözlük kapsamında başvurduğu herhangi bir yerel değişken final veya etkili bir effectively final olmalıdır.  
+	* Derleyici, yerel bir değişkenin nihai olarak bildirilmiş olabileceği sonucuna varırsa, çünkü içine alma yöntemi bildirildikten ve başlatıldıktan sonra değişkeni hiçbir zaman değiştirmez, o zaman değişken effectively finaldir.
+	
+	
+		-Section 17.10 Stream<Integer> Manipulations-
+	
+	* Akışlar, başvuru türündeki nesneler üzerinde görevler gerçekleştirebilir.
+	* Arrays yöntemi asList bir dizinin List görünümünü oluşturur. 
+	
+	 
+		-Section 17.10.1 Creating a Stream<Integer>-
+	
+	* Arrays yöntem akışı, bir nesne dizisinden Stream oluşturmak için kullanılabilir.
+	* Interface Stream (paketi java.util.stream), herhangi bir referans türünde akış operasyonlarını gerçekleştirmek için genel bir arayüzdür.
+	* Class Arrays ayrıca int, long ve double dizilerden veya dizilerdeki öğe aralıklarından IntStreams, LongStreams ve DoubleStreams oluşturmak için yöntem akışının aşırı yüklenmiş sürümlerini de sağlar
+	
+		-Section 17.10.2 Sorting a Stream and Collecting the Results-
+	
+	* Akışları işlerken, daha sonra bunlar üzerinde işlem yapabilmek için genellikle sonuçları içeren yeni koleksiyonlar oluşturursunuz. Bir koleksiyon oluşturmak için Stream'in terminal işlemi collect komutunu kullanabilirsiniz.
+	* Method collect, bir Liste, Map veya Set oluşturan ve akış ardışık düzeninin sonuçlarını koleksiyona yerleştirerek değiştiren değiştirilebilir bir azaltma(reduction) işlemi gerçekleştirir.
+	* toArray , sonuçları Stream'in öğe türünde yeni bir diziye yerleştirir.
+	* Collector (java.util.stream paketi), değiştirilebilir bir reduction nasıl gerçekleştirileceğini belirtir.
+	* Sınıf Collectors (java.util.stream paketi), önceden tanımlanmış Collector uygulamalarını döndüren statik yöntemler sağlar. 
+	* Collectors yöntemi toList, Stream'in öğelerini List'e yerleştiren bir Collector döndürür.
+	
+	
+		-Section 17.10.3 Filtering a Stream and Storing the Results for Later Use-
+	
+	* Stream method filter'ın lambda bağımsız değişkeni, parametre değerinin yüklemi karşılayıp karşılamadığını belirten bir boolean döndüren tek parametreli bir yöntemi temsil eden işlevsel arabirim Predicate'i (package java.util.function) uygular. 
+
+		
+		-Section 17.11.1 Mapping Strings to Uppercase-
+	
+	* Stream yöntem map(), bağımsız değişken olarak işlevsel arabirim Function uygulayan bir nesne alır. Bu arabirim, bir görevi parametresiyle gerçekleştiren ve ardından sonucu döndüren tek parametreli bir yöntemi temsil eder.
+	
+		-Section 17.11.2 Filtering Strings Then Sorting Them in Case-Insensitive Ascending Order-
+	
+	* Stream yönteminin overload edilmiş sorted metodu, karşılaştırılan ilk değer ikinciden küçükse negatif bir değer, eşitse 0 ve ilk değer ikinciden büyükse pozitif bir değer döndüren bir karşılaştırma yöntemi tanımlayan bir Comparator alır.
+	* Varsayılan olarak, sorted yöntem türün doğal sırasını kullanır. Önceden tanımlanmış Comparator'a String.CASE_INSENSITIVE_ORDER geçirilmesi, büyük\/küçük harfe duyarlı olmayan bir sıralama gerçekleştirir.
+	 	
+	 	
+	 	-Section 17.11.3 Filtering Strings Then Sorting Them in Case-Insensitive Descending Order-
+	
+	* İşlevsel arabirim Comparator, varolan bir Comparator sıralamasını tersine çeviren ters çevrilmiş varsayılan yöntemi içerir. 
+	
+
+	 	
+		-Section 17.12.2 Filtering Employees with Salaries in a Specified Range-
+	
+	* Bir lambda'yı daha sonra kullanmak üzere bir değişkende depolayabilirsiniz.
+	* Lazy evaluation güzel performans özelliklerinden biri, istenen sonuç elde edilir edilmez akış işlem hattının işlenmesini durdurmak için kısa devre(short-cut) değerlendirmesi yapabilme yeteneğidir.
+	* Akış yöntemi findFirst kısa devreli bir terminal işlemi, akış ardışık düzenini işler ve akışın ara işlemlerinden ilk nesne bulunur bulunmaz işlemeyi sonlandırır. 
+	
+		
+		-Section 17.12.3 Sorting Employees By Multiple Fields-
+	
+	* Comparatorlar varsayılan yöntemle oluşturulabilir  (thenComparing).
+	* java.util.function paketindeki birçok işlevsel arabirim, işlevsellik oluşturmanıza olanak tanıyan varsayılan yöntemler sağlar.
+	* Intpredicate’in varsayılan yöntemi IntPredicate ile bağımsız değişken olarak aldığı IntPredicate arasında kısa devre değerlendirmesi ile mantıksal bir AND gerçekleştirir.
+	* Interface IntPredicate'in varsayılan yöntemi negate, çağrıldığı IntPredicate'in boole değerini tersine çevirir.
+	* Intpredicate’in varsayılan yöntemi IntPredicate ile bağımsız değişken olarak aldığı IntPredicate arasında kısa devre değerlendirmesi ile mantıksal bir OR gerçekleştirir.
+	* Interface Predicate, nesne bağımsız değişkeninin bir koşulu karşılayıp karşılamadığını belirten bir boolean döndüren bir yöntemi temsil eder.
+	
+	
+	
+		-Section 17.12.4 Mapping Employees to Unique Last Name Strings-
+	
+	* Stream method distinct eliminates any duplicates in the stream
+	
+	
+		-Section 17.12.5 Grouping Employees By Department-
+	
+	* Collectors statik yöntem groupingBy tarafından döndürülen Collector, akıştaki nesneleri sınıflandıran bir İşlev alır. Bu İşlev tarafından döndürülen değerler, Mapcollection'da anahtar olarak kullanılır. Karşılık gelen değerler, varsayılan olarak, belirli bir kategorideki akış öğelerini içeren Listeler'dir.
+	
+		
+		-Section 17.12.6 Counting the Number of Employees in Each Department-
+	
+	* İki bağımsız değişkene sahip Collectors static method groupingBy akıştaki nesneleri sınıflandıran bir İşlev ve İşlev tarafından sınıflandırılan nesneleri toplamak için kullanılan başka bir Collect alır.
+	* Collectors statik yöntemi count, belirli bir sınıflandırmadaki öğeleri bir Listede toplamak yerine bu öğelerin sayısına indirger.
+	
+	
+		-Section 17.12.7 Summing and Averaging Employee Salaries-
+	
+	* Akış yöntemi mapToDouble, nesneleri double değerlerle eşler ve bir DoubleStream döndürür.
+	* mapToDouble yöntemi, double değer döndüren tek parametreli bir yöntemi temsil eden bir ToDoubleFunction (java.util.function paketi) alır.
+	
+		-Section 17.13 Creating a Stream<String> from a File-
+	
+	* Files yöntemi lines, bir<String> dosyadaki metin satırlarını okumak için bir Akış oluşturur.
+	* Akış yöntemi flatMap, bir nesneyi bir akışa eşleyen bir İşlev alır, örneğin, bir metin satırı kelimelere dönüştürülür. 
+	* Pattern yöntemi splitAsStream bir String'i tokenize etmek için normal bir ifade kullanır.
+	* Map method entrySet, Map'in Key-value çiftlerini içeren bir Map.Entry nesneleri kümesi döndürür.
+	* Set yöntemi akışı, Set'in öğelerini işlemek için bir akış döndürür.
+	
+	
+		-Section 17.14 Streams of Random Values-
+	
+	* Class SecureRandom'ın ints, longs ve doubles yöntemleri (Random sınıfından devralınan) rasgele sayı akışları için sırasıyla IntStream, LongStream ve DoubleStream döndürür.
+	* Bağımsız değişken içermeyen ints yöntemi, rasgele int değerlerinin sonsuz akışı için bir IntStream oluşturur. Sonsuz akış, sonsuz bir akışta işlemeyi tamamlamak için kısa devre terminal işlemi kullandığınız bilinmeyen sayıda öğeye sahip bir akıştır.
+	* long bağımsız değişkenli ints yöntemi, belirtilen sayıda rasgele int değeri içeren bir IntStream oluşturur.
+	* İki int bağımsız değişkenine sahip ints yöntemi, ilk bağımsız değişkenden başlayarak ve ikincisine kadar olan ancak bu bağımsız değişkeni içermeyen aralıktaki rasgele int değerlerinin sonsuz akışı için bir IntStream oluşturur.
+	* long ve iki int bağımsız değişkenine sahip ints yöntemi, ilk bağımsız değişkenden ikincisine kadar olan aralıkta belirtilen sayıda rasgele int değeri içeren bir IntStream oluşturur.
+	* Bir IntStream'i Stream'e dönüştürmek için<Integer> kutulu IntStream yöntemini çağırın.
+	* İşlev statik yöntem identity, bağımsız değişkenini döndüren bir İşlev oluşturur.
+	
+	
+		-Section 17.15 Infinite Streams-
+	
+	* Java'nın akış arayüzleri, bilinmeyen, potansiyel olarak sonsuz sayıda öğeyi temsil eden veri kaynaklarını da destekler. Bunlar sonsuz akışlar olarak bilinir.
+	* IntStream yöntem iterator(), ilk bağımsız değişkeninde çekirdek değerle başlayan sıralı bir değer dizisi oluşturur. Sonraki her öğe, yinelemenin ikinci bağımsız değişkeni olarak belirtilen IntUnaryOperator dizisindeki önceki değere uygulanarak üretilir. 
+	* Sonsuz bir akışın ürettiği toplam öğe sayısını, bir akıştan işlenecek en fazla öğe sayısını belirten limit() çağırarak sınırlayabilirsiniz.
+	* Ayrıca, bir IntSupplier alan generate yöntemini kullanarak sıralanmamış sonsuz akışlar oluşturabilirsiniz. Bu arabirim, bağımsız değişken almayan ve int döndüren bir yöntemi temsil eder.
+	
+		-Section 17.17 Additional Notes on Java SE 8 Interfaces-
+	
+	* İşlevsel arabirimler yalnızca bir soyut yöntem içermelidir, ancak arabirim bildirimlerinde tam olarak uygulanan default yöntemleri ve statik yöntemleri de içerebilir.
+	* Bir sınıf varsayılan yöntemlerle bir arabirim uyguladığında ve bunları geçersiz kılmadığında, sınıf varsayılan uygulamaları devralır. Bir arabirimin tasarımcısı, arabirimi uygulayan varolan kodu bozmadan yeni varsayılan ve statik yöntemler ekleyerek arabirimi geliştirebilir. 
+	* Bir sınıf aynı varsayılan yöntemi iki arabirimden devralırsa, sınıfın bu yöntemi geçersiz kılması gerekir; aksi takdirde, derleyici bir derleme hatası oluşturur.
+	* Bir arabirimin işlevsel bir arabirim olduğunu, önüne @FunctionalInterface ek açıklama ekleyerek bildirebilirsiniz.
+	
 */
