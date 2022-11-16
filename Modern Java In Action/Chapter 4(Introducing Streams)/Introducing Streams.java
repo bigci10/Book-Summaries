@@ -86,7 +86,7 @@ public class ModernJavaInAction {}
  		Şimdilik, yeni yaklaşımın yazılım mühendisliği açısından birkaç acil fayda sağladığını görebilirsiniz:
  		
  			Kod bildirimsel bir şekilde yazılmıştır: Bir işlemin nasıl uygulanacağını belirtmek yerine (döngüler ve if koşulları gibi kontrol-akış bloklarını kullanarak) 
- 			ne elde etmek istediğinizi belirtirsiniz (kalorisi düşük olan bulaşıkları filtreleyin).
+ 			ne elde etmek istediğinizi belirtirsiniz (kalorisi düşük olan yemekleri filtreleyin).
  			
  			Önceki bölümde gördüğünüz gibi, bu yaklaşım, davranış parametrelendirmesi ile birlikte, değişen gereksinimlerle başa çıkmanızı sağlar:
  				kodu kopyalayıp yapıştırmak zorunda kalmadan, lambda ifadesi kullanarak yüksek kalorili yemekleri filtrelemek için kodunuzun ek bir sürümünü kolayca oluşturabilirsiniz.
