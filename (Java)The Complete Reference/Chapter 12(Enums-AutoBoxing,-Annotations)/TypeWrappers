@@ -1,0 +1,411 @@
+
+public class TypeWrappers {}
+
+
+/*--------------------------------------------------------------------------------------------
+ 							TYPE WRAPPERS
+ 							
+	Bildiğiniz gibi Java, dil tarafından desteklenen temel veri türlerini tutmak için int veya double gibi ilkel türleri (basit türler olarak da adlandırılır) kullanır. 
+	Nesneler yerine ilkel türler, performans için kullanılır. 
+	Bu değerler için nesneler kullanmak, en basit hesaplamalara bile kabul edilemez bir ek yük ekleyecektir. 
+	Bu nedenle, ilkel türler nesne hiyerarşisinin bir parçası değildir ve Nesne'yi devralmazlar.
+ 
+	İlkel türlerin sunduğu performans avantajına rağmen, bir nesne gösterimine ihtiyaç duyacağınız zamanlar vardır. 
+	Örneğin, ilkel bir türü bir yönteme başvurarak geçiremezsiniz.
+	Ayrıca, Java tarafından uygulanan standart veri yapılarının çoğu nesneler üzerinde çalışır, bu da bu veri yapılarını ilkel türleri depolamak için kullanamayacağınız anlamına gelir.
+	Bu (ve diğer) durumlarla başa çıkmak için Java, bir nesne içindeki ilkel bir türü kapsülleyen sınıflar olan tür sarmalayıcıları sağlar.
+	
+	
+	Tür sarmalayıcı sınıfları Bölüm II'de ayrıntılı olarak açıklanmıştır, ancak doğrudan Java'nın otomatik kutulama özelliğiyle ilgili oldukları için burada tanıtılmışlardır.
+	
+	Tür sarmalayıcıları Double, Float, Long, Integer, Short, Byte,Charecter ve Boolean'dır. 
+	Bu sınıflar, ilkel türleri Java'nın nesne hiyerarşisine tam olarak entegre etmenizi sağlayan çok çeşitli yöntemler sunar. 
+	Her biri daha sonra kısaca incelenir.
+--------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------------------------------------------------
+							Character
+	
+	Karakter, bir char etrafındaki bir sarmalayıcıdır. 
+	Character(char ch) için oluşturucu. 
+	Burada, ch, oluşturulmakta olan Character nesnesi tarafından sarılacak karakteri belirtir.
+	Ancak, JDK 9 ile başlayarak, Karakter oluşturucu kullanımdan deprecated olmuştır ve JDK 16 ile başlayarak kullanımdan kaldırılmıştır. 
+	
+	static Character valueOf(char ch)
+	
+	Ch'yi sarmalayan bir Character nesnesi döndürür. 
+	Bir Character nesnesinde bulunan char değerini elde etmek için, charValue( ) öğesini çağırın, : char charValue( ) Kapsüllenmiş karakteri döndürür.
+
+--------------------------------------------------------------------------------------------*/
+
+
+
+
+/*--------------------------------------------------------------------------------------------
+						Boolean
+	
+	Boolean, boole değerlerinin etrafında bir sarmalayıcıdır.
+	şu şekilde constructora sahiplerdir:
+	Boolean(boolean boolValue)
+	Boolean(String boolString)
+	
+	İlk sürümde, boolValue true veya false olmalıdır. 
+	İkinci sürümde, boolString 'true' dizesini içeriyorsa (büyük veya küçük harfle), yeni Boole nesnesi true olacaktır. 
+	Aksi takdirde, yanlış olacaktır.
+	
+	
+	Ancak, JDK 9 ile başlayarak, Boole oluşturucuları deprecate oldu ve JDK 16 ile başlayarak,  kullanımdan kaldırıldı. 
+	Bugün, bir Boole nesnesi elde etmek için valueOf( ) statik yöntemini kullanmanız önemle önerilir. 
+	Burada gösterilen iki versiyona sahiptir:
+	
+	static Boolean valueOf(boolean boolValue)
+	static Boolean valueOf(String boolString)
+	
+	Her biri, belirtilen değeri sarmalayan bir Boole nesnesi döndürür.
+	Bir Boole nesnesinden bir boole değeri elde etmek için, burada gösterilen booleanValue( ) öğesini kullanın:
+	
+	boolean booleanValue( )
+	
+	Çağıran nesnenin boole eşdeğerini döndürür.
+	
+--------------------------------------------------------------------------------------------*/
+
+
+
+/*--------------------------------------------------------------------------------------------
+
+					The Numeric Type Wrappers
+					
+	
+	Şimdiye kadar, en yaygın kullanılan tür sarmalayıcıları sayısal değerleri temsil edenlerdir.
+	Bunlar Byte, Short, Integer, Long, float ve Double'dır. Tüm sayısal tür sarmalayıcıları soyut sınıf numarasını devralır. 
+	Sayı, biçimlerinin her birinde bir nesnenin değerini döndüren yöntemleri bildirir. 
+	Bu yöntemler burada gösterilmiştir:
+	
+	byte byteValue( )
+	double doubleValue( )
+	float floatValue( )
+	int intValue( )
+	long longValue( )
+	short shortValue( )
+	
+	Örneğin, doubleValue( ) bir nesnenin değerini double olarak döndürür, floatValue( ) değeri float olarak döndürür ve bu şekilde devam eder. 
+	Bu yöntemler, sayısal tür sarmalayıcılarının her biri tarafından uygulanır.
+	
+	Tüm sayısal tür sarmalayıcıları, bir nesnenin belirli bir değerden veya bu değerin dize temsilinden oluşturulmasına izin veren oluşturucuları tanımlar. 
+	Örneğin, Tamsayı için tanımlanan oluşturucular şunlardır:
+	
+	Integer(int num)
+	Integer(String str)
+
+	str geçerli bir sayısal değer içermiyorsa, bir NumberFormatException atılır.
+	
+	Ancak, JDK 9'dan başlayarak, sayısal tür sarmalayıcı oluşturucuları deprecate edilmiş ve JDK 16'dan itibaren  kullanımdan kaldırılmıştır.
+	
+	static Integer valueOf(int val)
+	static Integer valueOf(String valStr) throws NumberFormatException
+	
+	Burada, val bir tamsayı değeri belirtir ve valStr dize biçiminde düzgün biçimlendirilmiş bir sayısal değeri temsil eden bir dize belirtir. 
+	Her biri, belirtilen değeri sarmalayan bir Tamsayı nesnesi döndürür. İşte bir örnek:
+	
+	Integer iOb = Integer.valueOf(100);
+	
+	Bu deyim yürütüldükten sonra, 100 değeri bir Tamsayı örneği tarafından temsil edilir. 
+	Böylece, iOb 100 değerini bir nesnenin içine sarar. 
+	Az önce gösterilen valueOf( ) formlarına ek olarak, Tamsayı sarmalayıcıları, Byte, Short, Integer ve Long, ayrıca bir radix belirtmenize olanak tanıyan bir form sağlar.
+	
+	Tüm tür sarmalayıcıları toString( ) öğesini geçersiz kılar. 
+	Sarıcının içerdiği değerin insan tarafından okunabilir biçimini döndürür. 
+	Bu, örneğin bir tür sarmalayıcı nesnesini println( ), örneğin, ilkel türüne dönüştürmek zorunda kalmadan geçirerek değerin çıktısını almanızı sağlar.
+--------------------------------------------------------------------------------------------*/
+
+//class Wrap
+//{
+//	public static void main(String[] args) 
+//	{
+//		Integer iOb = Integer.valueOf(100);
+//		
+//		int i = iOb.intValue();
+//		System.out.println(i + " " + iOb);
+//	}
+//}
+
+
+/*--------------------------------------------------------------------------------------------
+
+	Bu program, 100 tamsayı değerini iOb adlı bir Tamsayı nesnesinin içine sarar. 
+	Program daha sonra intValue( ) öğesini çağırarak bu değeri elde eder ve sonucu i.Bir nesne içindeki bir değeri kapsülleme işlemine kutulama adı verilir. 
+	Böylece, programda, bu satır 100 değerini bir Tamsayıya kutular:
+	
+	Integer iOb = Integer.valueOf(100);
+	
+	Bir tür sarmalayıcısından bir değer ayıklama işlemine kutudan çıkarma adı verilir. Örneğin, program iOb'daki değeri şu ifadeyle açar:
+	
+	int i = iOb.intValue();
+	
+	Önceki program tarafından değerleri kutulamak ve kutudan çıkarmak için kullanılan aynı genel yordam, Java'nın orijinal sürümünden beri kullanılabilir. 
+	Ancak, bugün, Java daha sonra açıklanacak olan daha akıcı bir yaklaşım sunmaktadır.
+	
+--------------------------------------------------------------------------------------------*/
+
+
+
+
+/*--------------------------------------------------------------------------------------------
+						Autoboxing
+						
+	Java'nın modern sürümleri iki önemli özellik içermektedir: otomatik kutulama ve otomatik kutudan çıkarma. 
+	Otomatik kutulama, ilkel bir türün otomatik olarak eşdeğer tür sarmalayıcısına kapsüllendiği (kutulandığı) işlemdir. 
+	Bir nesneyi açıkça oluşturmaya gerek yoktur. 
+	Otomatik kutudan çıkarma, kutulu bir nesnenin değerinin, değeri gerektiğinde bir tür sarmalayıcısından otomatik olarak ayıklandığı (kutudan çıkarıldığı) işlemdir. 
+	intValue( ) veya doubleValue( ) gibi bir yöntemi çağırmaya gerek yoktur.
+
+	Otomatik kutulama ve otomatik kutudan çıkarma, çeşitli algoritmaların kodlamasını büyük ölçüde kolaylaştırarak manuel olarak kutulama ve kutudan çıkarma değerlerinin sıkıntısını ortadan kaldırır. 
+	Ayrıca hataları önlemeye yardımcı olurlar. 
+	Dahası, sadece nesneler üzerinde çalışan jenerikler için çok önemlidirler. 
+	Son olarak, otomatik kutulama Koleksiyonlar Çerçevesi (Bölüm II'de açıklanmıştır) ile çalışmayı çok daha kolay hale getirir.
+	
+	Otomatik kutulama ile, ilkel bir türü sarmak için bir nesneyi el ile oluşturmak gerekli değildir. 
+	Bu değeri yalnızca bir tür sarmalayıcı başvurusuna atamanız gerekir. 
+	Java nesneyi sizin için otomatik olarak oluşturur. 
+	Örneğin, 100 değerine sahip bir Integerobject oluşturmanın modern yolu aşağıda verilmiştir:
+	
+	Integer iOb = 100; // autobox an int
+	
+	Nesnenin açıkça kutulu olmadığına dikkat edin. Java bunu sizin için otomatik olarak halleder.
+	
+	Bir nesnenin kutusunu açmak için, bu nesne başvurusunu ilkel tipte bir değişkene atamanız yeterlidir. 
+	Örneğin, iOb'un kutusunu açmak için şu satırı kullanabilirsiniz:
+	
+	int i = iOb; // auto-unbox
+	
+--------------------------------------------------------------------------------------------*/
+
+//class AutoBox
+//{
+//	public static void main(String[] args) 
+//	{
+//		Integer iOb = 100;
+//		
+//		int i = iOb;
+//		
+//		System.out.println(i+ " " + iOb);
+//		
+//	}
+//}
+
+
+
+/*--------------------------------------------------------------------------------------------
+ 					Autoboxing and Methods
+ 					
+ 	Basit atama durumuna ek olarak, ilkel bir türün bir nesneye dönüştürülmesi gerektiğinde otomatik kutulama otomatik olarak gerçekleşir; 
+ 	otomatik kutudan çıkarma, bir nesnenin ilkel bir türe dönüştürülmesi gerektiğinde gerçekleşir.
+ 	
+ 	Bu nedenle, otomatik kutulama\/kutudan çıkarma, bir bağımsız değişken bir yönteme geçirildiğinde veya bir değer bir yöntem tarafından döndürüldüğünde oluşabilir. 
+
+
+--------------------------------------------------------------------------------------------*/
+
+class AutoBox2
+//Take an Integer parameter and return
+// an int value;
+{
+	static int m(Integer v)
+	{
+		return v;// auto-unbox to int
+	}
+	
+	public static void main(String[] args) 
+	{
+		Integer iOb = m(100);
+	}
+}
+
+/*--------------------------------------------------------------------------------------------
+		Programda, m( ) öğesinin bir Tamsayı parametresi belirttiğine ve bir int sonucu döndürdüğüne dikkat edin. İçeride main( ), m( ) değeri 100 geçirilir. m( ) bir Tamsayı beklediğinden, bu değer otomatik olarak kutulanır. 
+		Ardından, m( ) bağımsız değişkeninin int eşdeğerini döndürür. 
+		Bu, v'nin kutusunun otomatik olarak açılmasına neden olur. 
+		Ardından, bu int değeri main( ) içindeki iOb'a atanır ve bu da int dönüş değerinin otomatik olarak kutulanmasına neden olur.
+--------------------------------------------------------------------------------------------*/
+
+
+/*--------------------------------------------------------------------------------------------
+				Autoboxing/Unboxing Occurs in Expressions
+				
+	Genel olarak, otomatik kutulama ve kutudan çıkarma, bir nesneye veya bir nesneden dönüştürme gerektiğinde gerçekleşir. 
+	Bu, ifadeler için geçerlidir. 
+	İfade içinde, sayısal bir nesnenin kutusu otomatik olarak kaldırılır. 
+	İfadenin sonucu, gerekirse yeniden kutulanır. 
+	örneğin, aşağıdaki programı göz önünde bulundurun:
+	
+--------------------------------------------------------------------------------------------*/
+
+
+//class AutoBox3
+//{
+//	public static void main(String[] args) 
+//	{
+//		Integer iOb , iOb2;
+//		int i;
+//		
+//		iOb = 100;
+//		System.out.println("Original Value "+ iOb);
+//		
+//		 // The following automatically unboxes iOb,
+//		 // performs the increment, and then reboxes
+//		 // the result back into iOb.
+//		 ++iOb;
+//		 System.out.println("After ++iOb: " + iOb);
+//		 
+//		 
+//		 // Here, iOb is unboxed, the expression is
+//		 // evaluated, and the result is reboxed and
+//		 // assigned to iOb2.
+//		 iOb2 = iOb + (iOb / 3);
+//		 System.out.println("iOb2 after expression: " + iOb2);
+//		 
+//		 // The same expression is evaluated, but the
+//		 // result is not reboxed.
+//		 i = iOb + (iOb / 3);
+//		 System.out.println("i after expression: " + i);
+//		
+//	}
+//}
+
+/*--------------------------------------------------------------------------------------------
+	Programda, bu satıra özellikle dikkat edin: ++iOb;
+	
+	Bu, iOb'daki değerin artmasına neden olur. 
+	Şu şekilde çalışır: iOb kutusu açılır, değer artırılır ve sonuç yeniden kutulanır.
+	
+	Otomatik kutudan çıkarma, bir ifadede farklı türdeki sayısal nesneleri karıştırmanıza da olanak tanır. 
+	Değerlerin kutusu açıldıktan sonra, standart türdeki promosyonlar ve dönüşümler uygulanır. 
+	Örneğin, aşağıdaki program mükemmel bir şekilde geçerlidir:
+--------------------------------------------------------------------------------------------*/
+
+//class AutoBox4 
+//{
+//	 public static void main(String[] args) 
+//	 {
+//		 Integer iOb = 100;
+//		 Double dOb = 98.6;
+//		 dOb = dOb + iOb;
+//		 System.out.println("dOb after expression: " + dOb);
+//	 }
+//}
+
+
+/*--------------------------------------------------------------------------------------------
+	Gördüğünüz gibi, hem double nesne dOb hem de Tamsayı nesnesi iOb toplandı ve sonuç yeniden kutulandı ve dOb'da saklandı.
+	
+	Otomatik kutudan çıkarma nedeniyle, switch deyimini denetlemek için Tamsayı sayısal nesnelerini kullanabilirsiniz. 
+	Örneğin, şu parçayı düşünün:
+	
+	Integer iOb = 2;
+	switch(iOb) 
+	{
+ 		case 1: System.out.println("one");
+ 		break;
+ 		case 2: System.out.println("two");
+ 		break;
+ 		default: System.out.println("error");
+	}
+	
+	switch ifadesi değerlendirildiğinde, iOb kutusu açılır ve int değeri elde edilir.
+	
+	Programlardaki örneklerin gösterdiği gibi, otomatik kutulama \/ kutudan çıkarma nedeniyle, bir ifadede sayısal nesneler kullanmak hem sezgisel hem de kolaydır. 
+	Java'nın ilk günlerinde, bu tür kodlar intValue( ) gibi yöntemlere yapılan dökümleri ve çağrıları içerirdi.
+--------------------------------------------------------------------------------------------*/
+
+
+
+
+/*--------------------------------------------------------------------------------------------
+				Autoboxing/Unboxing Boolean and Character Values
+	
+	Daha önce açıklandığı gibi, Java ayrıca boole ve char için sarmalayıcılar sağlar. 
+	Bunlar Boolean ve Character. 
+	Otomatik kutulama\/kutudan çıkarma bu sarmalayıcılar için de geçerlidir. 
+	Örneğin, aşağıdaki programı göz önünde bulundurun:
+--------------------------------------------------------------------------------------------*/
+
+class AutoBox5
+{
+	public static void main(String[] args) 
+	{
+		// Autobox/unbox a boolean.
+		 Boolean b = true;
+		 
+		 // Below, b is auto-unboxed when used in
+		 // a conditional expression, such as an if.
+		 if(b) System.out.println("b is true");
+		
+		 // Autobox/unbox a char.
+		 Character ch = 'x'; // box a char
+		 char ch2 = ch; // unbox a char
+	}
+}
+
+
+/*--------------------------------------------------------------------------------------------
+
+	Bu program hakkında dikkat edilmesi gereken en önemli şey, if koşullu ifadesinin içindeki b'nin otomatik olarak kutudan çıkarılmasıdır. 
+	Hatırlamanız gerektiği gibi, if öğesini denetleyen koşullu ifadenin boolean yazmak için değerlendirilmesi gerekir. 
+	Otomatik kutudan çıkarma nedeniyle, koşullu ifade değerlendirildiğinde b içinde bulunan boole değeri otomatik olarak kutudan çıkarılır.
+	
+	Böylece, autoboxing\/unboxing ile, if deyimini denetlemek için bir Boole nesnesi kullanılabilir.
+	
+	Otomatik kutudan çıkarma nedeniyle, bir Boole nesnesi artık Java'nın döngü deyimlerinden herhangi birini denetlemek için de kullanılabilir. 
+	Bir Boolean, while, for veya do\/while'ın koşullu ifadesi olarak kullanıldığında, otomatik olarak boolean eşdeğerine kutudan çıkarılır
+	
+	boolean b;
+	while(b) {....}
+--------------------------------------------------------------------------------------------*/
+
+
+/*--------------------------------------------------------------------------------------------
+				Autoboxing/Unboxing Helps Prevent Errors
+	
+	Sunduğu rahatlığa ek olarak, otomatik kutulama \/ kutudan çıkarma da hataları önlemeye yardımcı olabilir. 
+	Örneğin, aşağıdaki programı göz önünde bulundurun:
+	
+--------------------------------------------------------------------------------------------*/
+
+
+//class UnboxingError {
+//	 
+//	public static void main(String[] args) 
+//	 {
+//		 Integer iOb = 1000; // autobox the value 1000
+//		 int i = iOb.byteValue(); // manually unbox as byte !!!
+//		 System.out.println(i); // does not display 1000 !
+//	 }
+//}
+
+
+
+/*--------------------------------------------------------------------------------------------
+
+		Bu program beklenen 1000 değerini değil, –24! Bunun nedeni, iOb içindeki değerin byteValue( ) çağrılarak manuel olarak kutudan çıkarılmasıdır , bu da iOb'da depolanan değerin 1.000 olan kesilmesine neden olur. 
+		Bu, –24 çöp değerinin i'ye atanmasıyla sonuçlanır. 
+		Otomatik kutudan çıkarma bu tür bir hatayı önler, çünkü iOb'daki değer her zaman otomatik olarak int ile uyumlu bir değere açılır.
+		
+		Genel olarak, otomatik kutulama her zaman uygun nesneyi oluşturduğundan ve otomatik kutudan çıkarma her zaman uygun değeri ürettiğinden, işlemin yanlış türde nesne veya değer üretmesinin bir yolu yoktur. 
+		Otomatik işlem tarafından üretilenden farklı bir tür istediğiniz nadir durumlarda, yine de değerleri el ile kutulayabilir ve kutudan çıkarabilirsiniz. 
+		Genel olarak, otomatik kutulama \/ kutudan çıkarma kullanmalısınız. 
+		
+		Double a, b, c;
+		a = 10.0;
+		b = 4.0;
+		c = Math.sqrt(a*a + b*b);
+		System.out.println("Hypotenuse is " + c);
+
+		Bu örnekte, Double türündeki nesneler, dik üçgenin hipotenüsünü hesaplamak için kullanılan değerleri tutar. 
+		Bu kod teknik olarak doğru olmasına ve aslında düzgün çalışmasına rağmen, otomatik kutulama \/ kutudan çıkarmanın çok kötü bir kullanımıdır. 
+		İlkel tip double kullanılarak yazılan eşdeğer koddan çok daha az verimlidir. 
+		Bunun nedeni, her otomatik kutunun ve otomatik olarak açılan kutunun, ilkel tür kullanıldığında bulunmayan ek yükü eklemesidir.
+
+		Genel olarak, tür sarmalayıcılarını kullanımınızı yalnızca ilkel bir türün nesne gösteriminin gerekli olduğu durumlarla sınırlamanız gerekir. 
+		Autoboxing\/unboxing, ilkel türleri ortadan kaldırmanın bir \"arka kapı\" yolu olarak Java'ya eklenmedi.
+--------------------------------------------------------------------------------------------*/
